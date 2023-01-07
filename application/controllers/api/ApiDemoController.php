@@ -6,9 +6,15 @@ use chriskacerguis\RestServer\RestController;
 
 
 class ApiDemoController extends RestController {
-     public function index_get()
+    public function index_get()
     {
-      echo "Helloe API";
+        $this->load->database();
+       
+        $query = $this->db->query('SELECT * FROM ma_table');
+        foreach ($query->result() as $row) {
+        echo $row->nom;
+        echo $row->prenom;
+        }
     }
 
 }
