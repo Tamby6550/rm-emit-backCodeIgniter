@@ -111,6 +111,10 @@ $route['api/supprimerParcours/(:any)'] = 'api/Mention/supprimerParcours/$1';
 //Recherche Pacrours
 $route['api/recherche'] = 'api/Mention/recherche';
 
+//Supprimer mention
+$route['api/rechercheMention/(:any)'] = 'api/Mention/rechercheMention/$1';
+
+
 
 
 
@@ -119,5 +123,13 @@ $route['api/recherche'] = 'api/Mention/recherche';
 /*Get All classe */
 $route['api/getClasse'] = 'api/Classe/getClasse';
 
+/*Get All classe Parcous Mention */
+$route['api/getClasseMentionParcours'] = 'api/Classe/getClasseMentionParcours';
 //Ajout Classe 
 $route['api/ajoutClass'] = 'api/Classe/ajoutClass';
+//modification classe
+$route['api/updateClasse'] = 'api/Classe/updateClasse';
+//suppression classe
+$route['api/supprimerClasse/(:any)'] = 'api/Classe/supprimerClasse/$1';
+/*Get Recherche classe Parcous Mention */
+$route['api/rechercheClasseParcoursMention'] = 'api/Classe/rechercheClasseParcoursMention';

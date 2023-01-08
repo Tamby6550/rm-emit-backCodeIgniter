@@ -24,9 +24,9 @@ class Mention extends RestController
     public function getMention_get()
     {
         $query = $this->db->get("mentions");
-        $element_const = $query->result();
+        $resultat = $query->result();
 
-        $this->response($element_const, RestController::HTTP_OK);
+        $this->response($resultat, RestController::HTTP_OK);
       
     }
 
@@ -36,9 +36,9 @@ class Mention extends RestController
         $this->db->select("trim(nom_mention||' ('||libmention||')')  as label");
         $this->db->select('id_mention as value');
         $query = $this->db->get("mentions");
-        $element_const = $query->result();
+        $resultat = $query->result();
 
-        $this->response($element_const, RestController::HTTP_OK);
+        $this->response($resultat, RestController::HTTP_OK);
       
     }
 
@@ -80,9 +80,9 @@ class Mention extends RestController
     public function getMentionParcours_get()
     {
         $query = $this->db->get("mention_parcours");
-        $element_const = $query->result();
+        $resultat = $query->result();
 
-        $this->response($element_const, RestController::HTTP_OK);
+        $this->response($resultat, RestController::HTTP_OK);
     }
 
    
@@ -125,15 +125,29 @@ class Mention extends RestController
     //Supprimer mention
     public function supprimerMention_delete($id_mention)
     {
-        $this->db->where('id_mention', $id_mention);
-        // $this->db->where('nom_prof', 'John');
-        // $this->db->where('cat_prof', 'Mathématiques');
-        $this->db->delete('mentions');
-        $response = [
-            'etat' => 'success',
-            'status' => 'success',
-            'message' => 'L\'enregistrement bien supprimer ',
-        ];
+         //Verifier  sode efa misy donne ao @vue classe_mention_parcours
+         $this->db->where('id_mention', $id_mention);
+         $query = $this->db->get("classe_mention_parcours");
+         $resverf = $query->result();
+ 
+         //Raha mbola tsisy
+         if ($resverf) {
+             $response = [
+                 'etat' => 'warn',
+                 'status' => 'Suppression non reuissie',
+                 'message' => 'Un problème est survenu avec la foreign key de votre table de base de données ',
+             ];
+         } else {
+            $this->db->where('id_mention', $id_mention);
+            $this->db->delete('mentions');
+             $response = [
+                 'etat' => 'info',
+                 'status' => 'Suppression reuissie',
+                 'message' => 'L\'enregistrement bien supprimer ',
+             ];
+         }
+
+
         $this->response($response);
     }
 
@@ -162,35 +176,51 @@ class Mention extends RestController
         $data = json_decode(file_get_contents('php://input'), true);
     
          // Mettre à jour l'enregistrement dans la base de données
+         $this->db->set('id_mention', $data['id_mention']);
          $this->db->set('parcours', $data['parcours']);
          $this->db->set('libparcours', $data['libparcours']);
          $this->db->where('id_parcours', $data['id_parcours']);
          $this->db->update('parcours');
          $response = [
              'etat' => 'success',
-             'status' => 'success',
+             'status' => $data,
              'message' => 'L\'enregistrement a été mis à jour avec succès',
          ];
          $this->response($response);
     }
 
     //Supprimer 
-    public function supprimerParcours_delete($id_pacrours)
+    public function supprimerParcours_delete($id_parcours)
     {
-        $this->db->where('id_parcours', $id_pacrours);
-        // $this->db->where('nom_prof', 'John');
-        // $this->db->where('cat_prof', 'Mathématiques');
-        $this->db->delete('parcours');
-        $response = [
-            'etat' => 'success',
-            'status' => 'success',
-            'message' => 'L\'enregistrement bien supprimer ',
-        ];
+        
+        //Verifier  sode efa misy donne ao @vue classe_mention_parcours
+        $this->db->where('id_parcours', $id_parcours);
+        $query = $this->db->get("classe_mention_parcours");
+        $resverf = $query->result();
+
+        //Raha mbola tsisy
+        if ($resverf) {
+           
+            $response = [
+                'etat' => 'warn',
+                'status' => 'Suppression non reuissie',
+                'message' => 'Un problème est survenu avec la foreign key de votre table de base de données ',
+            ];
+        } else {
+            $this->db->where('id_parcours', $id_parcours);
+            $this->db->delete('parcours');
+            $response = [
+                'etat' => 'info',
+                'status' => 'Suppression reuissie',
+                'message' => 'L\'enregistrement bien supprimer ',
+            ];
+        }
+  
         $this->response($response);
     }
 
 
-    //Ajout Class
+    //Recherche
     public function recherche_post()
     {
         //Maka Json
@@ -204,6 +234,19 @@ class Mention extends RestController
         $mention_parcourss = $query->result();
 
         $this->response($mention_parcourss);
+    }
+
+    //Recherhce (@ajout classe)
+    public function rechercheMention_get($id_mention)
+    {
+
+        $this->db->select("trim(nom_parcours||' ('||abbrparcours||')')  as label");
+        $this->db->select('id_parcours as value');
+        $this->db->where('id_mention', $id_mention);
+        $query = $this->db->get("mention_parcours");
+        $resultat = $query->result();
+
+        $this->response($resultat);
     }
 
 
