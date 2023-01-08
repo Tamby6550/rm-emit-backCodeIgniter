@@ -77,8 +77,9 @@ class Proff_api extends RestController
         // $this->db->where('cat_prof', 'Mathématiques');
         $this->db->delete('proff');
         $response = [
+            'etat' => 'success',
             'status' => 'success',
-            'message' => 'L\'enregistrement a été mis à jour avec succès',
+            'message' => 'L\'enregistrement bien supprimer ',
         ];
         $this->response($response);
     }

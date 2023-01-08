@@ -56,42 +56,62 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api/demo'] = 'api/ApiDemoController/index';
 
 //Controlleur Proff_api
-/*Proff */
+/*Affichage Proff */
 $route['api/getProff'] = 'api/Proff_api/proff';
-/*Mettre a jour */
+/*Mettre a jour Proff*/
 $route['api/update'] = 'api/Proff_api/update';
-//Ajout Prof 
+//Ajout Proff 
 $route['api/ajoutProff'] = 'api/Proff_api/ajoutProff';
-//Delete Prof
+//Delete Proff
 $route['api/supprimerProff/(:any)'] = 'api/Proff_api/supprimerProff/$1';
 
 
 
 //Controlleur Element constitutif
-/*Proff */
+/* Affichage Element constitutif */
 $route['api/elementconst'] = 'api/ElementConst/elementconst';
-/*Mettre a jour */
+/*Mettre a jour Element constitutif*/
 $route['api/updateElementconst'] = 'api/ElementConst/updateElementconst';
 //Ajout Prof 
 $route['api/ajoutElementconst'] = 'api/ElementConst/ajoutElementconst';
 //Ampifandraisina @prof sy details 
 $route['api/assigneElementconst'] = 'api/ElementConst/assigneElementconst';
-//Delete Prof
-// $route['api/supprimerProff/(:any)'] = 'api/ElementConst/supprimerProff/$1';
+
 
 
 
 //Controlleur Mention
-
 /*Get All Mention */
 $route['api/getMention'] = 'api/Mention/getMention';
+
+/*Get Id Mention*/
+$route['api/getIdMention'] = 'api/Mention/getIdMention';
+
 /*Get All Mention et Parcours*/
 $route['api/getMentionParcours'] = 'api/Mention/getMentionParcours';
+
 //Ajout Mention 
 $route['api/ajoutMention'] = 'api/Mention/ajoutMention';
 
+//Update Mention
+$route['api/updateMention'] = 'api/Mention/updateMention';
+
+//Update Parcours
+$route['api/updateParcours'] = 'api/Mention/updateParcours';
+
 //Ajout Mention et Parcours
 $route['api/ajoutMentionParcours'] = 'api/Mention/ajoutMentionParcours';
+
+//Supprimer mention
+$route['api/supprimerMention/(:any)'] = 'api/Mention/supprimerMention/$1';
+
+//Supprimer Parcours
+$route['api/supprimerParcours/(:any)'] = 'api/Mention/supprimerParcours/$1';
+
+//Recherche Pacrours
+$route['api/recherche'] = 'api/Mention/recherche';
+
+
 
 
 

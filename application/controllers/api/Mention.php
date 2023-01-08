@@ -21,22 +21,25 @@ class Mention extends RestController
 
     }
 
-    public function getMention_get()//Select distinct Mention
+    public function getMention_get()
     {
-        $this->db->distinct();
-        $this->db->select('nom_mention');
-        $this->db->select('libmention');
         $query = $this->db->get("mentions");
         $element_const = $query->result();
 
-        // if ($element_const) {
-            $this->response($element_const, RestController::HTTP_OK);
-        // } else {
-        //     $this->response([
-        //         'status' => false,
-        //         'message' => 'Aucun enregistrement trouvé',
-        //     ]);
-        // }
+        $this->response($element_const, RestController::HTTP_OK);
+      
+    }
+
+    public function getIdMention_get()
+    {
+        // $this->db->distinct();
+        $this->db->select("trim(nom_mention||' ('||libmention||')')  as label");
+        $this->db->select('id_mention as value');
+        $query = $this->db->get("mentions");
+        $element_const = $query->result();
+
+        $this->response($element_const, RestController::HTTP_OK);
+      
     }
 
     //Ajout Mention
@@ -46,6 +49,13 @@ class Mention extends RestController
         //Maka Json
         $data = json_decode(file_get_contents('php://input'), true);
 
+        $dataMention=array();
+         
+
+        //Element dans table mention
+        $dataMention['nom_mention']=$data['nom_mention'];
+        $dataMention['libmention']=$data['libmention'];
+
 
         // /*Maka Max ny id_niveau */
         $this->db->select_max('id_mention');
@@ -54,13 +64,12 @@ class Mention extends RestController
         $max = $result['id_mention'];
         $maxIdClasse = $max + 1;
 
-        $data['id_mention']=$maxIdClasse;
+        $dataMention['id_mention']=$maxIdClasse;
         
         //Enregistrena
-        $this->db->insert('mentions', $data);
+        $this->db->insert('mentions', $dataMention);
 
         $response = [
-           
             'etat' => 'success',
             'status' => $data,
             'message' => 'Enregistrement  succés !',
@@ -73,14 +82,7 @@ class Mention extends RestController
         $query = $this->db->get("mention_parcours");
         $element_const = $query->result();
 
-        // if ($element_const) {
-            $this->response($element_const, RestController::HTTP_OK);
-        // } else {
-        //     $this->response([
-        //         'status' => false,
-        //         'message' => 'Aucun enregistrement trouvé',
-        //     ]);
-        // }
+        $this->response($element_const, RestController::HTTP_OK);
     }
 
    
@@ -92,8 +94,8 @@ class Mention extends RestController
  
          $dataParcours=array();
          
- 
-         //Element dans table classe
+
+         //Element dans table parcours
          $dataParcours['parcours']=$data['parcours'];
          $dataParcours['libparcours']=$data['libparcours'];
 
@@ -112,10 +114,98 @@ class Mention extends RestController
          //Enregistrena
          $this->db->insert('parcours', $dataParcours);
  
-         $response = [
-             'status' => $data,
-             'message' => 'Enregistrement  succés !',
+        $response = [
+             'etat' => 'success',
+             'status' => 'success',
+             'message' => 'L\'enregistrement succès',
          ];
          $this->response($response);
      }
+
+    //Supprimer mention
+    public function supprimerMention_delete($id_mention)
+    {
+        $this->db->where('id_mention', $id_mention);
+        // $this->db->where('nom_prof', 'John');
+        // $this->db->where('cat_prof', 'Mathématiques');
+        $this->db->delete('mentions');
+        $response = [
+            'etat' => 'success',
+            'status' => 'success',
+            'message' => 'L\'enregistrement bien supprimer ',
+        ];
+        $this->response($response);
+    }
+
+    // Fonction pour mettre à jour un enregistrement dans la table Proff
+    public function updateMention_put()
+    {
+        // Récupérer les données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
+    
+         // Mettre à jour l'enregistrement dans la base de données
+         $this->db->set('nom_mention', $data['nom_mention']);
+         $this->db->set('libmention', $data['libmention']);
+         $this->db->where('id_mention', $data['id_mention']);
+         $this->db->update('mentions');
+         $response = [
+             'etat' => 'success',
+             'status' => 'success',
+             'message' => 'L\'enregistrement a été mis à jour avec succès',
+         ];
+         $this->response($response);
+    }
+    // Fonction pour mettre à jour un enregistrement dans la table Parcours
+    public function updateParcours_put()
+    {
+        // Récupérer les données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
+    
+         // Mettre à jour l'enregistrement dans la base de données
+         $this->db->set('parcours', $data['parcours']);
+         $this->db->set('libparcours', $data['libparcours']);
+         $this->db->where('id_parcours', $data['id_parcours']);
+         $this->db->update('parcours');
+         $response = [
+             'etat' => 'success',
+             'status' => 'success',
+             'message' => 'L\'enregistrement a été mis à jour avec succès',
+         ];
+         $this->response($response);
+    }
+
+    //Supprimer 
+    public function supprimerParcours_delete($id_pacrours)
+    {
+        $this->db->where('id_parcours', $id_pacrours);
+        // $this->db->where('nom_prof', 'John');
+        // $this->db->where('cat_prof', 'Mathématiques');
+        $this->db->delete('parcours');
+        $response = [
+            'etat' => 'success',
+            'status' => 'success',
+            'message' => 'L\'enregistrement bien supprimer ',
+        ];
+        $this->response($response);
+    }
+
+
+    //Ajout Class
+    public function recherche_post()
+    {
+        //Maka Json
+        $data = json_decode(file_get_contents('php://input'), true);
+        $sql="Select * from mention_parcours where id_mention='".$data['id_mention']."'";
+
+        if (trim($data['parcours'])!="") {$sql=$sql+ " AND upper(parcours) like upper('%".$data['parcours']."%')";}
+        if (trim($data['libparcours'])!="") {$sql=$sql+ " AND upper(libparcours) like upper('%".$data['libparcours']."%')";}
+      
+        $query = $this->db->query($sql);
+        $mention_parcourss = $query->result();
+
+        $this->response($mention_parcourss);
+    }
+
+
+    
 }
