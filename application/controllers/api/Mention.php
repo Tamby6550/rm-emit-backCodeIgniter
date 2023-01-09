@@ -227,8 +227,8 @@ class Mention extends RestController
         $data = json_decode(file_get_contents('php://input'), true);
         $sql="Select * from mention_parcours where id_mention='".$data['id_mention']."'";
 
-        if (trim($data['parcours'])!="") {$sql=$sql+ " AND upper(parcours) like upper('%".$data['parcours']."%')";}
-        if (trim($data['libparcours'])!="") {$sql=$sql+ " AND upper(libparcours) like upper('%".$data['libparcours']."%')";}
+        if (trim($data['parcours'])!="") {$sql=$sql. " AND upper(parcours) like upper('%".$data['parcours']."%')";}
+        if (trim($data['libparcours'])!="") {$sql=$sql. " AND upper(libparcours) like upper('%".$data['libparcours']."%')";}
       
         $query = $this->db->query($sql);
         $mention_parcourss = $query->result();

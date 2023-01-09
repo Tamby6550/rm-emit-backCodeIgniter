@@ -12,6 +12,9 @@ class Proff_api extends RestController
         header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
         parent::__construct();
         $this->load->database();
     }
@@ -43,14 +46,15 @@ class Proff_api extends RestController
         $this->db->insert('proff', $data);
 
         $response = [
-            'status' => $data,
-            'message' => 'Prof enregistré  avec succès !',
+            'etat' => 'success',
+            'status' => 'success',
+            'message' => 'L\'enregistrement succès',
         ];
         $this->response($response);
     }
 
     // Fonction pour mettre à jour un enregistrement dans la table Proff
-    public function update_put()
+    public function updateProff_put()
     {
         // Récupérer les données de la requête
         $data = json_decode(file_get_contents('php://input'), true);
@@ -58,7 +62,6 @@ class Proff_api extends RestController
         // Mettre à jour l'enregistrement dans la base de données
         $this->db->set('nom_prof', $data['nom_prof']);
         $this->db->set('cat_prof', $data['cat_prof']);
-        $this->db->set('role', $data['role']);
         $this->db->where('id_prof', $data['id_prof']);
         $this->db->update('proff');
         $response = [
@@ -73,15 +76,29 @@ class Proff_api extends RestController
     public function supprimerProff_delete($id_prof)
     {
         $this->db->where('id_prof', $id_prof);
-        // $this->db->where('nom_prof', 'John');
-        // $this->db->where('cat_prof', 'Mathématiques');
         $this->db->delete('proff');
         $response = [
-            'etat' => 'success',
-            'status' => 'success',
+            'etat' => 'info',
+            'status' => 'Suppression',
             'message' => 'L\'enregistrement bien supprimer ',
         ];
         $this->response($response);
+    }
+
+    //Recherche
+    public function rechercheProf_post()
+    {
+        //Maka Json
+        $data = json_decode(file_get_contents('php://input'), true);
+        $sql="Select * from proff where 1=1 ";
+
+        if (trim($data['nom_prof'])!="") {$sql=$sql. " AND upper(nom_prof) like upper('%".$data['nom_prof']."%')";}
+        if (trim($data['cat_prof'])!="") {$sql=$sql. " AND upper(cat_prof) like upper('%".$data['cat_prof']."%')";}
+      
+        $query = $this->db->query($sql);
+        $res = $query->result();
+
+        $this->response($res);
     }
 
 }

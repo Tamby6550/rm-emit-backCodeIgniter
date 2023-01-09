@@ -59,11 +59,13 @@ $route['api/demo'] = 'api/ApiDemoController/index';
 /*Affichage Proff */
 $route['api/getProff'] = 'api/Proff_api/proff';
 /*Mettre a jour Proff*/
-$route['api/update'] = 'api/Proff_api/update';
+$route['api/updateProff'] = 'api/Proff_api/updateProff';
 //Ajout Proff 
 $route['api/ajoutProff'] = 'api/Proff_api/ajoutProff';
 //Delete Proff
 $route['api/supprimerProff/(:any)'] = 'api/Proff_api/supprimerProff/$1';
+//Recherche Proff
+$route['api/rechercheProf'] = 'api/Proff_api/rechercheProf';
 
 
 
@@ -116,9 +118,6 @@ $route['api/rechercheMention/(:any)'] = 'api/Mention/rechercheMention/$1';
 
 
 
-
-
-
 //Controlleur Classe
 /*Get All classe */
 $route['api/getClasse'] = 'api/Classe/getClasse';
@@ -133,3 +132,16 @@ $route['api/updateClasse'] = 'api/Classe/updateClasse';
 $route['api/supprimerClasse/(:any)'] = 'api/Classe/supprimerClasse/$1';
 /*Get Recherche classe Parcous Mention */
 $route['api/rechercheClasseParcoursMention'] = 'api/Classe/rechercheClasseParcoursMention';
+
+
+
+
+//controlleur Engagement
+//Get Engagement
+$route['api/getEngagement'] = 'api/Engagement/getEngagement';
+//Ajout engagement
+$route['api/ajoutEngagement'] = 'api/Engagement/ajoutEngagement';
+//update engagement
+$route['api/updateEngagement'] = 'api/Engagement/updateEngagement';
+//delete engagement
+$route['api/supprimerEngagement/(:any)'] = 'api/Engagement/supprimerEngagement/$1';
