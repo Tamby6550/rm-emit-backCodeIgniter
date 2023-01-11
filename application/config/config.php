@@ -40,8 +40,13 @@ $config['base_url'] = '';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php';
 
+
+$config['index_page'] = 'index.php';
+//JWT
+$config['jwt_secret_key'] = 'tamby';
+$config['jwt_expire'] = '172800';
+$config['jwt_algorithm'] = 'HS256';
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL

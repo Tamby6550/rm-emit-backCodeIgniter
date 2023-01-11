@@ -145,3 +145,16 @@ $route['api/ajoutEngagement'] = 'api/Engagement/ajoutEngagement';
 $route['api/updateEngagement'] = 'api/Engagement/updateEngagement';
 //delete engagement
 $route['api/supprimerEngagement/(:any)'] = 'api/Engagement/supprimerEngagement/$1';
+
+
+
+
+
+//matiere
+$route['api/getMatiere'] = 'api/Matiere/getMatiere';
+
+
+//Creer compte Login
+$route['api/ajoutRmAssocier'] = 'api/CompteRm/ajoutRmAssocier';
+//Get compte Login
+$route['api/getLogin'] = 'api/CompteRm/getLogin';
