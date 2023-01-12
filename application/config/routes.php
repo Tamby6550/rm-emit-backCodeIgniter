@@ -56,8 +56,8 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api/demo'] = 'api/ApiDemoController/index';
 
 //Controlleur Proff_api
-/*Affichage Proff */
-$route['api/getProff'] = 'api/Proff_api/proff';
+/*Affichage Proff */ // ok
+$route['api/getProff/(:any)/(:any)/(:any)'] = 'api/Proff_api/afficheProff/$1/$2/$3';
 /*Mettre a jour Proff*/
 $route['api/updateProff'] = 'api/Proff_api/updateProff';
 //Ajout Proff 
@@ -150,11 +150,19 @@ $route['api/supprimerEngagement/(:any)'] = 'api/Engagement/supprimerEngagement/$
 
 
 
-//matiere
+//matiere 
 $route['api/getMatiere'] = 'api/Matiere/getMatiere';
+//matiere ok
+$route['api/getMatiereProfRm/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereProfRm/$1/$2/$3/$4';
+//matiere ok
+$route['api/getMatiereRm/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3';
+//ajot details matiere ok
+$route['api/ajouteDetailsMatiere/(:any)/(:any)/(:any)'] = 'api/Matiere/ajouteDetailsMatiere/$1/$2/$3';
 
 
-//Creer compte Login
+//Creer compte Login //ok
 $route['api/ajoutRmAssocier'] = 'api/CompteRm/ajoutRmAssocier';
-//Get compte Login
+//Get compte Login ok
 $route['api/getLogin'] = 'api/CompteRm/getLogin';
+//Get grade et mention sur login ou inscription ok
+$route['api/getGradeMention'] = 'api/CompteRm/getGradeMention';

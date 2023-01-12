@@ -9,7 +9,7 @@ class Proff_api extends RestController
     public function __construct()
     {
         header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin,Authorization, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         $method = $_SERVER['REQUEST_METHOD'];
         if($method == "OPTIONS") {
@@ -17,15 +17,53 @@ class Proff_api extends RestController
         }
         parent::__construct();
         $this->load->database();
+        $this->load->library('Authorization_Token');	
     }
 
-    //Affiche tous les proff
-    public function proff_get()
-    {
-        $query = $this->db->get("proff");
-        $proff = $query->result();
 
-        $this->response($proff, RestController::HTTP_OK);
+    // $headers = $this->input->request_headers(); 
+    // if (isset($headers['Authorization'])) {
+    //     $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+    //     if ($decodedToken['status'])
+    //     {
+    //        Code ok
+    //     }
+    //     else {
+    //         $this->response($decodedToken);
+    //     }
+    // }
+    // else {
+    //     $this->response(['Authentication failed'], RestController::HTTP_OK);
+    // }
+    //Affiche tous les proff
+    public function afficheProff_get($rm_id,$mention_nom,$grad_id)
+    {
+        $headers = $this->input->request_headers(); 
+        if (isset($headers['Authorization'])) {
+            $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                
+                $this->db->select("prof_id")->distinct();
+                $this->db->select("nom_prof");
+                $this->db->select("prof_contact");
+                $this->db->select("prof_adresse");
+                $this->db->where('nom_mention', $mention_nom);
+                $this->db->where('grad_id', $grad_id);
+                $this->db->where('rm_id', $rm_id);
+                $query = $this->db->get("mat_niv_parcours_prof_ue_semestre_associer_respmention");
+                $proff = $query->result();
+        
+                $this->response($proff, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+        }
+        else {
+            $this->response(['Authentication failed'], RestController::HTTP_OK);
+        }
+       
     }
 
     public function ajoutProff_post()

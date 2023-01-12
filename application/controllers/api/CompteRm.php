@@ -122,7 +122,6 @@ class CompteRm extends RestController
                 );
                
                 $tokenData = $this->authorization_token->generateToken($payload);
-                // $decodedToken = $this->authorization_token->validateToken($payload);
                 
                 $response = [
                     'etat' => 'success',
@@ -141,7 +140,7 @@ class CompteRm extends RestController
             }
         } else {
              $response = [
-                'etat' => 'error',
+                'etat' => 'warn',
                 'situation'=> 'Login',
                 'message' => 'Votre compte n\'existe pas ! ',
              ];
@@ -149,5 +148,20 @@ class CompteRm extends RestController
 
         $this->response($response);
      }
+  //Affiche tous les proff
+  public function getGradeMention_get()
+  {
+    
+    $query = $this->db->get("grade");
+    $grade = $query->result();
+    $query = $this->db->get("mention");
+    $mention = $query->result();
 
+    $response = [
+        'grade' => $grade,
+        'mention'=> $mention
+     ];
+    $this->response($response, RestController::HTTP_OK);
+       
+  }
 }
