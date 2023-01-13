@@ -46,20 +46,43 @@ class Matiere extends RestController
       
      }
      //Affiche 
-     public function getMatiereRm_get($rm_id,$mention_nom,$grad_id)
+     public function getMatiereRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
      {
-        $sql="select prof_id,nom_prof,prof_contact,matiere,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
-        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' order by abbr_niveau,seme_code ASC ";
-
-        $headers = $this->input->request_headers(); 
-		if (isset($headers['Authorization'])) {
-			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
-            if ($decodedToken['status'])
-            {
+         
+         $sql="select prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
+         $headers = $this->input->request_headers(); 
+         if (isset($headers['Authorization'])) {
+             $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+             if ($decodedToken['status'])
+             {
+                 $reponse=array();
+                 if ($etat=='5') {//rehefa tsy manao recherche 
+                    $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
+                }else{
+                    $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
+                }
                 $sql=$sql . $condition;
                 $query = $this->db->query($sql);
                 $res = $query->result();
-                $this->response($res, RestController::HTTP_OK);
+                
+                $this->db->select("annee_univ  as label");
+                $this->db->select('annee_univ as value');
+                $queryanne_univ = $this->db->get("annee_univ");
+                $anne_univ = $queryanne_univ->result();
+
+
+                $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
+                $queryniveau =  $this->db->query($sqlniveau);
+                $niveau = $queryniveau->result();
+
+                $reponse = [
+                    'matiere' => $res,
+                    'anne_univ' =>$anne_univ,
+                    'niveau' =>$niveau,
+                    'sql' =>$sql
+                ];
+               
+                $this->response($reponse, RestController::HTTP_OK);
             }
             else {
                 $this->response($decodedToken);
@@ -134,6 +157,47 @@ class Matiere extends RestController
 		else {
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
+     }
+     public function updateEtatMatiere_put()
+     {
+
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+               // Récupérer les données de la requête
+                $data = json_decode(file_get_contents('php://input'), true);
+                $etat_re='';
+                // Mettre à jour l'enregistrement dans la base de données
+                $this->db->set('etat', $data['etat']);
+                $this->db->where('mati_id', $data['mati_id']);
+                $this->db->where('anne_lib', $data['anne_univ']);
+                $this->db->update('anne_univ_tamby_rm');
+                if ($data['etat']=='0'||$data['etat']==null) {
+                   $etat_re='Pas en encore demaré !';
+                }
+                if ($data['etat']=='1') {
+                   $etat_re='En cours !';
+                }
+                if ($data['etat']=='2') {
+                   $etat_re='Términé !';
+                }
+                $response = [
+                    'etat' => 'success',
+                    'situation' => 'Modification etat de matière',
+                    'message' => $data['nom_mat'].' : '.$etat_re,
+                ];
+                $this->response($response);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+         
      }
 
 }

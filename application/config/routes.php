@@ -155,9 +155,11 @@ $route['api/getMatiere'] = 'api/Matiere/getMatiere';
 //matiere ok
 $route['api/getMatiereProfRm/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereProfRm/$1/$2/$3/$4';
 //matiere ok
-$route['api/getMatiereRm/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3';
+$route['api/getMatiereRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3/$4/$5/$6';
 //ajot details matiere ok
 $route['api/ajouteDetailsMatiere/(:any)/(:any)/(:any)'] = 'api/Matiere/ajouteDetailsMatiere/$1/$2/$3';
+//Modif etat matiere ok
+$route['api/updateEtatMatiere'] = 'api/Matiere/updateEtatMatiere';
 
 
 //Creer compte Login //ok
