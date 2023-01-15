@@ -45,7 +45,7 @@ $config['base_url'] = '';
 $config['index_page'] = 'index.php';
 //JWT
 $config['jwt_secret_key'] = 'tamby';
-$config['jwt_expire'] = '172800';
+$config['jwt_expire'] = '30';
 $config['jwt_algorithm'] = 'HS256';
 /*
 |--------------------------------------------------------------------------
