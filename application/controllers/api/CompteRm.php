@@ -25,9 +25,24 @@ class CompteRm extends RestController
 
     }
 
+   
+
      //Ajout responsable associer , Responsable Mention
      public function ajoutRmAssocier_post()
      {
+        //Verifie raha misy @
+        function verify_at_symbol($word) {
+            if (substr($word, -1) === "@") {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //Mamafa @
+        function remove_at_symbol($string) {
+            return rtrim($string, "@");
+        }
+
          //Maka Json
          $data = json_decode(file_get_contents('php://input'), true);
 
@@ -36,56 +51,84 @@ class CompteRm extends RestController
  
          //Element dans table responsable
          $dataRM['rm_nom']=$data['rm_nom'];
-
-         //Mila cryptena
          $mdp=$data['rm_mdp'];
-         //....
          
+         //Cryptena le mdp
          $mdp = do_hash($mdp);
 
-
+        //Affectena ao
          $dataRM['rm_mdp']=$mdp;
 
          //Element dans table Assoccier
          $dataAss['mention_nom']=$data['mention_nom'];
          $dataAss['grad_id']=$data['grad_id'];
 
-         $this->db->where('mention', $dataAss['mention_nom']);
-         $this->db->where('grad_id',  $dataAss['grad_id']);
-         $query = $this->db->get("info_compte_rm");
-         $verfCompte = $query->row_array();
+         //Cas exceptionnel (Admin ou autre)
+        if (verify_at_symbol($dataRM['rm_nom'])) {
+            // /*Maka Max ny rm_id */
+            $dataRM['rm_nom']=remove_at_symbol($dataRM['rm_nom']);
+            $this->db->select_max('rm_id');
+            $query = $this->db->get('respmention');
+            $result = $query->row_array();
+            $max = $result['rm_id'];
+            $maxIdClasse = $max + 1;
+    
+            $dataRM['rm_id']=$maxIdClasse;
+            $dataAss['rm_id']=$maxIdClasse;
 
-         if ($verfCompte) {
+            //Enregistrena table responsable mention
+            $this->db->insert('respmention', $dataRM);
+
+            //Enregistrena table responsable associer
+            $this->db->insert('associer', $dataAss);
+    
             $response = [
-                'etat' => 'warn',
-                 'situa' => 'Creation compte',
-                 'message' => 'Cette mention et ce niveau ont déjà un RM !',
-             ];
-         }
-         //Raha mbola tsisy ilay compte 
-         else{         
-         // /*Maka Max ny rm_id */
-         $this->db->select_max('rm_id');
-         $query = $this->db->get('respmention');
-         $result = $query->row_array();
-         $max = $result['rm_id'];
-         $maxIdClasse = $max + 1;
- 
-         $dataRM['rm_id']=$maxIdClasse;
-         $dataAss['rm_id']=$maxIdClasse;
-
-         //Enregistrena table responsable mention
-         $this->db->insert('respmention', $dataRM);
-
-         //Enregistrena table responsable associer
-         $this->db->insert('associer', $dataAss);
- 
-         $response = [
-            'etat' => 'success',
-             'situation' => 'Creation compte',
-             'message' => 'Enregistrement  succés !',
-         ];
+                'etat' => 'success',
+                'situation' => 'Creation compte',
+                'message' => 'Enregistrement  succés !',
+            ];
         }
+
+        //Rehefa Normale
+        else{
+            $this->db->where('mention', $dataAss['mention_nom']);
+            $this->db->where('grad_id',  $dataAss['grad_id']);
+            $query = $this->db->get("info_compte_rm");
+            $verfCompte = $query->row_array();
+            //verifiena so efa ao le compte
+            if ($verfCompte) {
+               $response = [
+                   'etat' => 'warn',
+                    'situa' => 'Creation compte',
+                    'message' => 'Cette mention et ce niveau ont déjà un RM !',
+                ];
+            }
+            //Raha mbola tsisy ilay compte 
+            else{         
+            // /*Maka Max ny rm_id */
+            $this->db->select_max('rm_id');
+            $query = $this->db->get('respmention');
+            $result = $query->row_array();
+            $max = $result['rm_id'];
+            $maxIdClasse = $max + 1;
+    
+            $dataRM['rm_id']=$maxIdClasse;
+            $dataAss['rm_id']=$maxIdClasse;
+    
+            //Enregistrena table responsable mention
+            $this->db->insert('respmention', $dataRM);
+    
+            //Enregistrena table responsable associer
+            $this->db->insert('associer', $dataAss);
+    
+            $response = [
+               'etat' => 'success',
+                'situation' => 'Creation compte',
+                'message' => 'Enregistrement  succés !',
+            ];
+           }
+        }
+
          $this->response($response);
      }
 
