@@ -160,6 +160,8 @@ $route['api/getMatiereRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Mati
 $route['api/ajouteDetailsMatiere/(:any)/(:any)/(:any)'] = 'api/Matiere/ajouteDetailsMatiere/$1/$2/$3';
 //Modif etat matiere ok
 $route['api/updateEtatMatiere'] = 'api/Matiere/updateEtatMatiere';
+//matiere chart ok
+$route['api/getChartRm/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getChartRm/$1/$2/$3/$4/$5';
 
 
 //Creer compte Login //ok

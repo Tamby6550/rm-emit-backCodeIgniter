@@ -139,20 +139,20 @@ class CompteRm extends RestController
 
         //Element dans table responsable
 
-        $dataRM['nom']=$data['rm_nom'];
+        // $dataRM['nom']=$data['rm_nom'];
         $dataRM['mention']=$data['mention'];
         $dataRM['grad_id']=$data['grad_id'];
         $mdp=$data['motpasse'];
-        
+        $mdp = do_hash($mdp);
         $this->db->select("rm_id");
-        $this->db->where('nom',  $dataRM['nom']);
+        $this->db->where('motpasse', $mdp);
         $this->db->where('mention', $dataRM['mention']);
         $this->db->where('grad_id',  $dataRM['grad_id']);
         $query = $this->db->get("info_compte_rm");
         $resultat = $query->row_array();
 
          if ($resultat) {
-            $mdp = do_hash($mdp);
+            // $mdp = do_hash($mdp);
             $this->db->where('rm_id',  $resultat['rm_id']);
             $this->db->where('motpasse', $mdp);
             $query1 = $this->db->get("info_compte_rm");
@@ -178,7 +178,8 @@ class CompteRm extends RestController
                 $response = [
                     'etat' => 'warn',
                     'situation' => 'Login',
-                    'message' => 'Mot de passe incorrect !',
+                    'message' => 'Mot de passe incorrect !'
+                    // 'status' => $resultat['rm_id']
                 ];
             }
         } else {

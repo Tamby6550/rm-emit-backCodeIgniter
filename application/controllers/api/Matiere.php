@@ -200,4 +200,84 @@ class Matiere extends RestController
          
      }
 
+     public function getChartRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id)
+     {
+         
+         $sql="";
+         $headers = $this->input->request_headers(); 
+         $conditionNon="";
+         $conditionEn="";
+         $conditionTermine="";
+         if (isset($headers['Authorization'])) {
+             $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+             if ($decodedToken['status'])
+             {
+                 $reponse=array();
+                 //rehefa tsy manao recherche 
+                 if ($niv_id=='0') {
+                    $sql="select count(etat) as termine , 
+
+                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='1' ) as  encours,
+
+                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='0' ) as  pas_encore
+                    
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='2'";
+                }else{
+                    $sql="select count(etat) as termine , 
+
+                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='1' and niv_id='".$niv_id."' ) as  encours,
+
+                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='0'  and niv_id='".$niv_id."') as  pas_encore
+                    
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='2'  and niv_id='".$niv_id."'";
+
+                }
+             
+                $query = $this->db->query($sql);
+                $res = $query->row_array();
+                
+                $dtres=array();
+                $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+              
+                  
+                $this->db->select("annee_univ  as label");
+                $this->db->select('annee_univ as value');
+                $queryanne_univ = $this->db->get("annee_univ");
+                $anne_univ = $queryanne_univ->result();
+
+
+                $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
+                $queryniveau =  $this->db->query($sqlniveau);
+                $niveau = $queryniveau->result();
+
+                $reponse = [
+                    'etat' => $dtres,
+                    'anne_univ' =>$anne_univ,
+                    'niveau' =>$niveau,
+                ];
+
+              
+                $this->response($reponse, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
 }
