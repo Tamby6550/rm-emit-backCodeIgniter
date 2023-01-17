@@ -160,7 +160,6 @@ class Matiere extends RestController
      }
      public function updateEtatMatiere_put()
      {
-
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
@@ -170,10 +169,22 @@ class Matiere extends RestController
                 $data = json_decode(file_get_contents('php://input'), true);
                 $etat_re='';
                 // Mettre à jour l'enregistrement dans la base de données
-                $this->db->set('etat', $data['etat']);
-                $this->db->where('mati_id', $data['mati_id']);
-                $this->db->where('anne_lib', $data['anne_univ']);
-                $this->db->update('anne_univ_tamby_rm');
+                if ($data['etat']=='1') {
+                    $this->db->set('date_debut', 'NOW()');
+                    $this->db->set('etat', $data['etat']);
+                    $this->db->where('mati_id', $data['mati_id']);
+                    $this->db->where('anne_lib', $data['anne_univ']);
+                    $this->db->update('anne_univ_tamby_rm');
+                }
+                if ($data['etat']=='2') {
+                    $this->db->set('date_fin', 'NOW()');
+                    $this->db->set('etat', $data['etat']);
+                    $this->db->where('mati_id', $data['mati_id']);
+                    $this->db->where('anne_lib', $data['anne_univ']);
+                    $this->db->update('anne_univ_tamby_rm');
+                }
+
+               
                 if ($data['etat']=='0'||$data['etat']==null) {
                    $etat_re='Pas en encore demaré !';
                 }
