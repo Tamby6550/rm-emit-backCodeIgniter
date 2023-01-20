@@ -28,7 +28,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-$config['base_url'] = '';
+$config['base_url'] = 'http://".$_SERVER["HTTP_HOST"]."/';
 
 /*
 |--------------------------------------------------------------------------

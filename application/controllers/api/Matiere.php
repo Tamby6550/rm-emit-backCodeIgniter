@@ -49,7 +49,7 @@ class Matiere extends RestController
      public function getMatiereRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
      {
          
-         $sql="select prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
+         $sql="select prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
          $headers = $this->input->request_headers(); 
          if (isset($headers['Authorization'])) {
              $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
@@ -169,15 +169,39 @@ class Matiere extends RestController
                 $data = json_decode(file_get_contents('php://input'), true);
                 $etat_re='';
                 // Mettre à jour l'enregistrement dans la base de données
-                if ($data['etat']=='1') {
-                    $this->db->set('date_debut', 'NOW()');
+                if ($data['etat']=='0') {
                     $this->db->set('etat', $data['etat']);
                     $this->db->where('mati_id', $data['mati_id']);
                     $this->db->where('anne_lib', $data['anne_univ']);
                     $this->db->update('anne_univ_tamby_rm');
                 }
+
+                if ($data['etat']=='1') {
+                    $this->db->set('date_debut', $data['valuedt']);
+                    $this->db->set('etat', $data['etat']);
+                    $this->db->where('mati_id', $data['mati_id']);
+                    $this->db->where('anne_lib', $data['anne_univ']);
+                    $this->db->update('anne_univ_tamby_rm');
+                }
+
                 if ($data['etat']=='2') {
-                    $this->db->set('date_fin', 'NOW()');
+                    $this->db->set('date_fin',  $data['valuedt']);
+                    $this->db->set('etat', $data['etat']);
+                    $this->db->where('mati_id', $data['mati_id']);
+                    $this->db->where('anne_lib', $data['anne_univ']);
+                    $this->db->update('anne_univ_tamby_rm');
+                }
+
+                if ($data['etat']=='3') {
+                    $this->db->set('date_sn',  $data['valuedt']);
+                    $this->db->set('etat', $data['etat']);
+                    $this->db->where('mati_id', $data['mati_id']);
+                    $this->db->where('anne_lib', $data['anne_univ']);
+                    $this->db->update('anne_univ_tamby_rm');
+                }
+
+                if ($data['etat']=='4') {
+                    $this->db->set('date_sr',  $data['valuedt']);
                     $this->db->set('etat', $data['etat']);
                     $this->db->where('mati_id', $data['mati_id']);
                     $this->db->where('anne_lib', $data['anne_univ']);
@@ -193,6 +217,12 @@ class Matiere extends RestController
                 }
                 if ($data['etat']=='2') {
                    $etat_re='Términé !';
+                }
+                if ($data['etat']=='3') {
+                   $etat_re='Términé examen session normale !';
+                }
+                if ($data['etat']=='4') {
+                   $etat_re='Términé examen session rattrapage !';
                 }
                 $response = [
                     'etat' => 'success',
