@@ -161,7 +161,7 @@ $route['api/ajouteDetailsMatiere/(:any)/(:any)/(:any)'] = 'api/Matiere/ajouteDet
 //Modif etat matiere ok
 $route['api/updateEtatMatiere'] = 'api/Matiere/updateEtatMatiere';
 //matiere chart ok
-$route['api/getChartRm/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getChartRm/$1/$2/$3/$4/$5';
+$route['api/getChartRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getChartRm/$1/$2/$3/$4/$5/$6';
 
 
 //Creer compte Login //ok
@@ -170,3 +170,5 @@ $route['api/ajoutRmAssocier'] = 'api/CompteRm/ajoutRmAssocier';
 $route['api/getLogin'] = 'api/CompteRm/getLogin';
 //Get grade et mention sur login ou inscription ok
 $route['api/getGradeMention'] = 'api/CompteRm/getGradeMention';
+//Chagment mot de passe
+$route['api/changeMdp'] = 'api/CompteRm/changeMdp';

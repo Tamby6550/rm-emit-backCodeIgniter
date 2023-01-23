@@ -186,16 +186,50 @@ class CompteRm extends RestController
              $response = [
                 'etat' => 'warn',
                 'situation'=> 'Login',
-                'message' => 'Votre compte n\'existe pas ! ',
+                'message' => 'Mot de passe incorrect !',
              ];
+        }
+
+        $this->response($response);
+     }
+
+    public function changeMdp_post()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $mdp=$data['an_mdp'];
+
+        $mdp_an = do_hash($mdp);
+
+        $this->db->where('rm_id',  $data['rm_id']);
+        $this->db->where('rm_mdp', $mdp_an);
+        $query1 = $this->db->get("respmention");
+        $resmdp = $query1->row_array();
+        if ($resmdp) {
+            $mdp_nv = do_hash($data['nv_mdp']);
+
+            $this->db->set('rm_mdp',  $mdp_nv);
+            $this->db->where('rm_id',  $data['rm_id']);
+            $this->db->update('respmention');
+            
+            $response = [
+                'etat' => 'success',
+                'situation' => 'Modif mot de passe',
+                'message' => 'Mot de passe bien modifié !',
+            ];
+        }else{
+            $response = [
+                'etat' => 'warn',
+                'situation' => 'Modif mot de passe',
+                'message' => 'Votre ancien mot de passe est incorrect'
+            ];
         }
 
         $this->response($response);
      }
   //Affiche tous les proff
   public function getGradeMention_get()
-  {
-    
+  {   
     $query = $this->db->get("grade");
     $grade = $query->result();
     $query = $this->db->get("mention");

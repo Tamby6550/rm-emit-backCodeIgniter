@@ -241,10 +241,10 @@ class Matiere extends RestController
          
      }
 
-     public function getChartRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id)
+     public function getChartRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$filtre)
      {
          
-         $sql="";
+         $sql="select now()";
          $headers = $this->input->request_headers(); 
          $conditionNon="";
          $conditionEn="";
@@ -266,31 +266,57 @@ class Matiere extends RestController
                     where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
                     and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='0' ) as  pas_encore
                     
-                    from mat_niv_parcours_prof_ue_semestre_associer_respmention
-                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
-                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='2'";
-                }else{
-                    $sql="select count(etat) as termine , 
-
-                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
-                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
-                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='1' and niv_id='".$niv_id."' ) as  encours,
-
-                    (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
-                    where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
-                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='0'  and niv_id='".$niv_id."') as  pas_encore
                     
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention
                     where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
-                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='2'  and niv_id='".$niv_id."'";
+                    and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and (etat='2' or etat='3' or etat='4')";
+                }else{
+
+                    if ($filtre=='c') {
+                        $sql="select count(etat) as termine , 
+
+                        (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                        and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='1' and niv_id='".$niv_id."' ) as  encours,
+    
+                        (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                        and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='0'  and niv_id='".$niv_id."') as  pas_encore
+                        
+                        from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                        and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and (etat='2' or etat='3' or etat='4')  and niv_id='".$niv_id."'";
+                    }else if ($filtre=='e') {
+                        $sql="select count(etat) as termine_sr , 
+
+                        (select  count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                        and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='3' and niv_id='".$niv_id."' ) as  termine_sn
+                        
+                        from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                        and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and etat='4'  and niv_id='".$niv_id."'";
+                    }
 
                 }
-             
+                
                 $query = $this->db->query($sql);
                 $res = $query->row_array();
                 
                 $dtres=array();
-                $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+                if ($niv_id=='0') {
+                    $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+
+                }else{
+                    if ($filtre=='c') {
+                        $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+                    }else  if ($filtre=='e'){
+                        $dtres=[$res['termine_sn'],$res['termine_sr']];
+                    }else{
+                        $dtres=['0','0','0'];
+
+                    }
+                }
               
                   
                 $this->db->select("annee_univ  as label");
@@ -307,6 +333,8 @@ class Matiere extends RestController
                     'etat' => $dtres,
                     'anne_univ' =>$anne_univ,
                     'niveau' =>$niveau,
+                    'sql' =>$sql,
+                    
                 ];
 
               
