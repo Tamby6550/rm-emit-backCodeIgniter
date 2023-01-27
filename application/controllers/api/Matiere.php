@@ -49,38 +49,71 @@ class Matiere extends RestController
      public function getMatiereRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
      {
          
-         $sql="select prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
+         $sql="select distinct prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
          $headers = $this->input->request_headers(); 
          if (isset($headers['Authorization'])) {
              $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
              if ($decodedToken['status'])
              {
                  $reponse=array();
-                 if ($etat=='5') {//rehefa tsy manao recherche 
-                    $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
+                
+                //rhefa admin
+                if ($rm_id=="admin") {
+                    
+                    if ($etat=='5') {//rehefa tsy manao recherche 
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."'  and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
+                    }else{
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."'  and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
+                    }
                 }else{
-                    $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
+                    if ($etat=='5') {//rehefa tsy manao recherche 
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
+                    }else{
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
+                    }
                 }
                 $sql=$sql . $condition;
                 $query = $this->db->query($sql);
                 $res = $query->result();
                 
+                $niveau="";
                 $this->db->select("annee_univ  as label");
                 $this->db->select('annee_univ as value');
                 $queryanne_univ = $this->db->get("annee_univ");
                 $anne_univ = $queryanne_univ->result();
 
+                //Rehefa admin de tsy micompte ny rm_id
+                if ($rm_id=="admin") {
+                    $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' "; 
+                    $queryniveau =  $this->db->query($sqlniveau);
+                    $niveau = $queryniveau->result();
+                }else{
+                    $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
+                    $queryniveau =  $this->db->query($sqlniveau);
+                    $niveau = $queryniveau->result();
+                }
 
-                $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
-                $queryniveau =  $this->db->query($sqlniveau);
-                $niveau = $queryniveau->result();
 
-                $reponse = [
-                    'matiere' => $res,
-                    'anne_univ' =>$anne_univ,
-                    'niveau' =>$niveau,
-                    'sql' =>$sql
-                ];
+                    
+                    $this->db->select("grad_nom  as label");
+                    $this->db->select('grad_id as value');
+                    $this->db->where('grad_nom<>',  'admin');
+                    $query = $this->db->get("grade");
+                    $grade = $query->result();
+                    
+                    $this->db->select("mention_nom  as label");
+                    $this->db->select('mention_nom as value');
+                    $this->db->where('mention_nom<>',  'Admin');
+                    $query = $this->db->get("mention");
+                    $mention = $query->result();
+                    $reponse = [
+                        'matiere' => $res,
+                        'anne_univ' =>$anne_univ,
+                        'niveau' =>$niveau,
+                        'sql' =>$sql,
+                        'grade' => $grade,
+                        'mention'=> $mention
+                    ];
                
                 $this->response($reponse, RestController::HTTP_OK);
             }
@@ -254,7 +287,57 @@ class Matiere extends RestController
              if ($decodedToken['status'])
              {
                  $reponse=array();
-                 //rehefa tsy manao recherche 
+                  //Rehefa  admin ts mikoty ny rm_id
+                 if ($rm_id=="admin") {
+                    if ($niv_id=='0') {
+                        $sql="select   count(etat) as termine , 
+    
+                        (select   count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                         and anne_univ='".$anne_univ."'  and etat='1' ) as  encours,
+    
+                        (select   count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                         and anne_univ='".$anne_univ."'  and etat='0' ) as  pas_encore
+                        
+                        
+                        from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                        where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                       and anne_univ='".$anne_univ."'  and (etat='2' or etat='3' or etat='4')";
+                    }else{
+    
+                        if ($filtre=='c') {
+                            $sql="select  count(etat) as termine , 
+    
+                            (select   count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                            where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                            and anne_univ='".$anne_univ."'  and etat='1' and niv_id='".$niv_id."' ) as  encours,
+        
+                            (select   count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                            where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                             and anne_univ='".$anne_univ."'  and etat='0'  and niv_id='".$niv_id."') as  pas_encore
+                            
+                            from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                            where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                          and anne_univ='".$anne_univ."'  and (etat='2' or etat='3' or etat='4')  and niv_id='".$niv_id."'";
+                        }else if ($filtre=='e') {
+                            $sql="select  count(etat) as termine_sr , 
+    
+                            (select   count(etat) from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                            where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."'
+                           and anne_univ='".$anne_univ."'  and etat='3' and niv_id='".$niv_id."' ) as  termine_sn
+                            
+                            from mat_niv_parcours_prof_ue_semestre_associer_respmention
+                            where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
+                         and anne_univ='".$anne_univ."'  and etat='4'  and niv_id='".$niv_id."'";
+                        }
+    
+                    }
+                }
+                
+                //Rehefa tsy admin fa RM tsotra
+                else{
+                    //rehefa tsy manao recherche 
                  if ($niv_id=='0') {
                     $sql="select count(etat) as termine , 
 
@@ -270,7 +353,7 @@ class Matiere extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention
                     where  nom_mention='".$mention_nom."' and grad_id='".$grad_id."' 
                     and rm_id='".$rm_id."' and anne_univ='".$anne_univ."'  and (etat='2' or etat='3' or etat='4')";
-                }else{
+                 }else{
 
                     if ($filtre=='c') {
                         $sql="select count(etat) as termine , 
@@ -299,22 +382,44 @@ class Matiere extends RestController
                     }
 
                 }
+            }
                 
                 $query = $this->db->query($sql);
                 $res = $query->row_array();
+
+
+                $querycmpt = $this->db->query("SELECT count(rm_id) as nbrecmpt FROM public.info_compte_rm where mention='".$mention_nom."' and grad_id='".$grad_id."'");
+                $resnbrcmpt = $querycmpt->row_array();
                 
                 $dtres=array();
-                if ($niv_id=='0') {
-                    $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
 
-                }else{
-                    if ($filtre=='c') {
-                        $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
-                    }else  if ($filtre=='e'){
-                        $dtres=[$res['termine_sn'],$res['termine_sr']];
+                if ($rm_id=="admin") {
+
+                    if ($niv_id=='0') {
+                        $dtres=[$res['pas_encore']/$resnbrcmpt['nbrecmpt'],$res['encours']/$resnbrcmpt['nbrecmpt'],$res['termine']/$resnbrcmpt['nbrecmpt']];
                     }else{
-                        $dtres=['0','0','0'];
-
+                        if ($filtre=='c') {
+                            $dtres=[$res['pas_encore']/$resnbrcmpt['nbrecmpt'],$res['encours']/$resnbrcmpt['nbrecmpt'],$res['termine']/$resnbrcmpt['nbrecmpt']];
+                        }else  if ($filtre=='e'){
+                            $dtres=[$res['termine_sn']/$resnbrcmpt['nbrecmpt'],$res['termine_sr']/$resnbrcmpt['nbrecmpt']];
+                        }else{
+                            $dtres=['0','0','0'];
+    
+                        }
+                    }
+                }else{
+                    if ($niv_id=='0') {
+                        $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+    
+                    }else{
+                        if ($filtre=='c') {
+                            $dtres=[$res['pas_encore'],$res['encours'],$res['termine']];
+                        }else  if ($filtre=='e'){
+                            $dtres=[$res['termine_sn'],$res['termine_sr']];
+                        }else{
+                            $dtres=['0','0','0'];
+    
+                        }
                     }
                 }
               
@@ -325,15 +430,39 @@ class Matiere extends RestController
                 $anne_univ = $queryanne_univ->result();
 
 
-                $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
-                $queryniveau =  $this->db->query($sqlniveau);
-                $niveau = $queryniveau->result();
+                 //Rehefa admin de tsy micompte ny rm_id
+                if ($rm_id=="admin") {
+                    $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' "; 
+                    $queryniveau =  $this->db->query($sqlniveau);
+                    $niveau = $queryniveau->result();
+                }else{
+                    $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
+                    $queryniveau =  $this->db->query($sqlniveau);
+                    $niveau = $queryniveau->result();
+                }
+
+                //Admin no mila anazy
+                $this->db->select("grad_nom  as label");
+                $this->db->select('grad_id as value');
+                $this->db->where('grad_nom<>',  'admin');
+                $query = $this->db->get("grade");
+                $grade = $query->result();
+                    
+                $this->db->select("mention_nom  as label");
+                $this->db->select('mention_nom as value');
+                $this->db->where('mention_nom<>',  'Admin');
+                $query = $this->db->get("mention");
+                $mention = $query->result();
+                //Admin no mila anazy//
+
 
                 $reponse = [
                     'etat' => $dtres,
                     'anne_univ' =>$anne_univ,
                     'niveau' =>$niveau,
                     'sql' =>$sql,
+                    'grade' => $grade,
+                    'mention'=> $mention
                     
                 ];
 

@@ -20,9 +20,6 @@ class CompteRm extends RestController
         $this->load->database();
         $this->load->helper('security');
         $this->load->library('Authorization_Token');
-
-       
-
     }
 
    
@@ -141,53 +138,86 @@ class CompteRm extends RestController
 
         // $dataRM['nom']=$data['rm_nom'];
         $dataRM['mention']=$data['mention'];
-        $dataRM['grad_id']=$data['grad_id'];
         $mdp=$data['motpasse'];
         $mdp = do_hash($mdp);
-        $this->db->select("rm_id");
-        $this->db->where('motpasse', $mdp);
-        $this->db->where('mention', $dataRM['mention']);
-        $this->db->where('grad_id',  $dataRM['grad_id']);
-        $query = $this->db->get("info_compte_rm");
-        $resultat = $query->row_array();
 
-         if ($resultat) {
-            // $mdp = do_hash($mdp);
-            $this->db->where('rm_id',  $resultat['rm_id']);
-            $this->db->where('motpasse', $mdp);
-            $query1 = $this->db->get("info_compte_rm");
-            $resmdp = $query1->row_array();
-            if ($resmdp) {
-                $payload = array(
-                    'rm_id' => $resmdp['rm_id'],
-                    'nom' => $resmdp['nom'],
-                    'mention' => $resmdp['mention']
-                );
+        if ($dataRM['mention']=='Admin') {
+                $this->db->where('motpasse', $mdp);
+                $query1 = $this->db->get("info_compte_rm");
+                $resmdp = $query1->row_array();
+                if ($resmdp) {
+                    $payload = array(
+                        'rm_id' => $resmdp['rm_id'],
+                        'nom' => $resmdp['nom'],
+                        'mention' => $resmdp['mention']
+                    );
                
-                $tokenData = $this->authorization_token->generateToken($payload);
+                    $tokenData = $this->authorization_token->generateToken($payload);
                 
-                $response = [
-                    'etat' => 'success',
-                    'situation' => 'Login',
-                    'message' => 'Bienvenue !',
-                    'info' =>$resmdp,
-                    'token' =>$tokenData
-                    // 'decodetoken' =>$decodedToken
-                ];
-            }else{
+                    $response = [
+                        'etat' => 'success',
+                        'situation' => 'Login',
+                        'message' => 'Bienvenue !',
+                        'info' =>$resmdp,
+                        'token' =>$tokenData
+                        // 'decodetoken' =>$decodedToken
+                    ];
+                }else{
+                    $response = [
+                        'etat' => 'warn',
+                        'situation' => 'Login',
+                        'message' => 'Mot de passe incorrect !'
+                        // 'status' => $resultat['rm_id']
+                    ];
+                }
+        }
+        else{
+            $dataRM['grad_id']=$data['grad_id'];
+            $this->db->select("rm_id");
+            $this->db->where('motpasse', $mdp);
+            $this->db->where('mention', $dataRM['mention']);
+            $this->db->where('grad_id',  $dataRM['grad_id']);
+            $query = $this->db->get("info_compte_rm");
+            $resultat = $query->row_array();
+
+            if ($resultat) {
+            // $mdp = do_hash($mdp);
+                $this->db->where('rm_id',  $resultat['rm_id']);
+                $this->db->where('motpasse', $mdp);
+                $query1 = $this->db->get("info_compte_rm");
+                $resmdp = $query1->row_array();
+                if ($resmdp) {
+                    $payload = array(
+                        'rm_id' => $resmdp['rm_id'],
+                        'nom' => $resmdp['nom'],
+                        'mention' => $resmdp['mention']
+                    );
+               
+                    $tokenData = $this->authorization_token->generateToken($payload);
+                
+                    $response = [
+                        'etat' => 'success',
+                        'situation' => 'Login',
+                        'message' => 'Bienvenue !',
+                        'info' =>$resmdp,
+                        'token' =>$tokenData
+                        // 'decodetoken' =>$decodedToken
+                    ];
+                }else{
+                    $response = [
+                        'etat' => 'warn',
+                        'situation' => 'Login',
+                        'message' => 'Mot de passe incorrect !'
+                        // 'status' => $resultat['rm_id']
+                    ];
+                }
+            } else {
                 $response = [
                     'etat' => 'warn',
-                    'situation' => 'Login',
-                    'message' => 'Mot de passe incorrect !'
-                    // 'status' => $resultat['rm_id']
+                    'situation'=> 'Login',
+                    'message' => 'Mot de passe incorrect !',
                 ];
             }
-        } else {
-             $response = [
-                'etat' => 'warn',
-                'situation'=> 'Login',
-                'message' => 'Mot de passe incorrect !',
-             ];
         }
 
         $this->response($response);
@@ -230,6 +260,7 @@ class CompteRm extends RestController
   //Affiche tous les proff
   public function getGradeMention_get()
   {   
+    $this->db->where('grad_nom<>',  'admin');
     $query = $this->db->get("grade");
     $grade = $query->result();
     $query = $this->db->get("mention");
@@ -238,7 +269,7 @@ class CompteRm extends RestController
     $response = [
         'grade' => $grade,
         'mention'=> $mention
-     ];
+    ];
     $this->response($response, RestController::HTTP_OK);
        
   }

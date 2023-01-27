@@ -17,15 +17,17 @@ class ApiDemoController extends RestController {
         }
         parent::__construct();
         $this->load->database();
-        $this->load->library('Authorization_Token');	
+        $this->load->helper('security');
     }
     
     public function testAPICi_get()
     {
+        $mdp = do_hash('123admin');
         $response = [
             'etat' => 'success',
              'status' => 'ok',
              'message' => 'Connexion ci3  succés !',
+             'mdp' => $mdp,
          ];
          
          $this->response($response);
