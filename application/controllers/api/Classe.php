@@ -212,6 +212,29 @@ class Classe extends RestController
       
      }
 
+     public function getNiveau_get($rm_id,$mention_nom,$grad_id)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $sqlniveau ="select distinct niv_id as value ,abbr_niveau as label from mat_niv_parcours_prof_ue_semestre_associer_respmention Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."'"; 
+                $queryniveau =  $this->db->query($sqlniveau);
+                $niveau = $queryniveau->result();
+
+                $this->response($niveau, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
+
      public function postGroupeTamby_post()
      {
         $headers = $this->input->request_headers(); 

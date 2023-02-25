@@ -138,6 +138,7 @@ $route['api/getNombreClasse/(:any)/(:any)/(:any)/(:any)'] = 'api/Classe/getNombr
 $route['api/getAnneUniv'] = 'api/Classe/getAnneUniv';
 $route['api/postGroupeTamby'] = 'api/Classe/postGroupeTamby';
 $route['api/getGrouptamby/(:any)/(:any)/(:any)'] = 'api/Classe/getGrouptamby/$1/$2/$3';
+$route['api/getNiveau/(:any)/(:any)/(:any)'] = 'api/Classe/getNiveau/$1/$2/$3';
 
 
 
@@ -183,4 +184,5 @@ $route['api/changeMdp'] = 'api/CompteRm/changeMdp';
 
 //Tableau d'affichage
 
-$route['api/getTableauAffiche/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3';
+$route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
+$route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';

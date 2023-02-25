@@ -158,11 +158,15 @@ class Matiere extends RestController
                 $dataDetails['group_ed']=$data['group_ed'];
                 $dataDetails['base_ep']=$data['base_ep'];
                 $dataDetails['group_ep']=$data['group_ep'];
+
+                $dataDetails['total_et']=intval($data['base_et'])*intval($data['group_et']);
+                $dataDetails['total_ed']=intval($data['base_ed'])*intval($data['group_ed']);
+                $dataDetails['total_ep']=intval($data['base_ep'])*intval($data['group_ep']);
                 
                 $dataann['anne_univ']=$data['anne_univ'];
                 
                 
-                $dataDetails['id_details']= $dateConv."".$data['mati_id'];
+                $dataDetails['id_details']= $data['mati_id'];
                 
                 try {
                     $this->db->where('id_details', $dataDetails['id_details']);
@@ -176,6 +180,9 @@ class Matiere extends RestController
                         $this->db->set('group_ed', $dataDetails['group_ed']);
                         $this->db->set('base_ep', $dataDetails['base_ep']);
                         $this->db->set('group_ep', $dataDetails['group_ep']);
+                        $this->db->set('total_et', $dataDetails['total_et']);
+                        $this->db->set('total_ed', $dataDetails['total_ed']);
+                        $this->db->set('total_ep', $dataDetails['total_ep']);
                         $this->db->where('id_details', $dataDetails['id_details']);
                         $this->db->update('detailstamby');
                     }
