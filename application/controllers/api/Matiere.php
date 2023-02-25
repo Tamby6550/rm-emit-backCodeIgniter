@@ -49,7 +49,7 @@ class Matiere extends RestController
      public function getMatiereRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
      {
          
-         $sql="select distinct prof_id,nom_prof,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
+         $sql="select distinct prof_id,nom_prof,vheure,credit,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
          $headers = $this->input->request_headers(); 
          if (isset($headers['Authorization'])) {
              $decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
@@ -127,7 +127,7 @@ class Matiere extends RestController
       
      }
 
-     public function ajouteDetailsMatiere_post($rm_id,$mention_nom,$grad_id)
+     public function ajouteDetailsMatiere_post()
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -159,27 +159,58 @@ class Matiere extends RestController
                 $dataDetails['base_ep']=$data['base_ep'];
                 $dataDetails['group_ep']=$data['group_ep'];
                 
-                //Maka id_matiere 
-                $id_prof=$data['mat_id'];
-        
-                //ny id_details ovaina ho date efa convertie + max id_matiere
-                $dataDetails['id_details']= $dateConv."".$data['mat_id'];
+                $dataann['anne_univ']=$data['anne_univ'];
                 
-                //Insertion dans la table detailstamby
-                $this->db->insert('detailstamby', $dataDetails);
+                
+                $dataDetails['id_details']= $dateConv."".$data['mati_id'];
+                
+                try {
+                    $this->db->where('id_details', $dataDetails['id_details']);
+                    $verf=$this->db->get('detailstamby');
+                    $res_verf = $verf->result();
+                    //raha efa misy de atao mis a jour
+                    if ($res_verf) {
+                        $this->db->set('base_et', $dataDetails['base_et']);
+                        $this->db->set('group_et', $dataDetails['group_et']);
+                        $this->db->set('base_ed', $dataDetails['base_ed']);
+                        $this->db->set('group_ed', $dataDetails['group_ed']);
+                        $this->db->set('base_ep', $dataDetails['base_ep']);
+                        $this->db->set('group_ep', $dataDetails['group_ep']);
+                        $this->db->where('id_details', $dataDetails['id_details']);
+                        $this->db->update('detailstamby');
+                    }
+                    //Sinon inserena
+                    else {
+                        //Insertion dans la table detailstamby
+                        $this->db->insert('detailstamby', $dataDetails);
+                    }
+                    
+                   
+                } catch (\Throwable $th) {
+                   //Insertion dans la table detailstamby
+                //    $this->db->insert('detailstamby', $dataDetails);
+
+                }
+
+               
         
 
                 $this->db->set('vheure', $dataMatiere['vheure']);
                 $this->db->set('credit', $dataMatiere['credit']);
-                $this->db->set('id_details', $dataDetails['id_details']);
                 $this->db->where('mati_id', $dataMatiere['mati_id']);
                 $this->db->update('matiere');
+
+
+                $this->db->set('id_details', $dataDetails['id_details']);
+                $this->db->where('mati_id', $dataMatiere['mati_id']);
+                $this->db->where('anne_lib', $dataann['anne_univ']);
+                $this->db->update('anne_univ_tamby_rm');
         
                 
                 $response = [
                     'etat' => 'success',
-                    'situation' => 'Ajout Details',
-                    'message' => 'Enregistrement  succés !',
+                    'situation' => 'Enregistrement Details',
+                    'message' => 'Mis à jour succé !',
                 ];
                 $this->response($response);
             }
@@ -191,6 +222,30 @@ class Matiere extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
+
+     public function getDetailsMatiere_get($anne_univ,$mati_id)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $sql="select det.* from detailstamby det,anne_univ_tamby_rm ann where det.id_details=ann.id_details and ann.anne_lib='".$anne_univ."' and ann.mati_id='".$mati_id."'";
+                $query3 = $this->db->query($sql);
+                $details_tamby = $query3->row_array();
+
+                $this->response($details_tamby, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
+
      public function updateEtatMatiere_put()
      {
         $headers = $this->input->request_headers(); 
@@ -478,4 +533,5 @@ class Matiere extends RestController
 		}
       
      }
+
 }

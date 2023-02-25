@@ -133,6 +133,12 @@ $route['api/supprimerClasse/(:any)'] = 'api/Classe/supprimerClasse/$1';
 /*Get Recherche classe Parcous Mention */
 $route['api/rechercheClasseParcoursMention'] = 'api/Classe/rechercheClasseParcoursMention';
 
+/*Get Classe et Nombre etudiant */
+$route['api/getNombreClasse/(:any)/(:any)/(:any)/(:any)'] = 'api/Classe/getNombreClasse/$1/$2/$3/$4';
+$route['api/getAnneUniv'] = 'api/Classe/getAnneUniv';
+$route['api/postGroupeTamby'] = 'api/Classe/postGroupeTamby';
+$route['api/getGrouptamby/(:any)/(:any)/(:any)'] = 'api/Classe/getGrouptamby/$1/$2/$3';
+
 
 
 
@@ -157,12 +163,13 @@ $route['api/getMatiereProfRm/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMat
 //matiere ok
 $route['api/getMatiereRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3/$4/$5/$6';
 //ajot details matiere ok
-$route['api/ajouteDetailsMatiere/(:any)/(:any)/(:any)'] = 'api/Matiere/ajouteDetailsMatiere/$1/$2/$3';
+$route['api/ajouteDetailsMatiere'] = 'api/Matiere/ajouteDetailsMatiere';
 //Modif etat matiere ok
 $route['api/updateEtatMatiere'] = 'api/Matiere/updateEtatMatiere';
 //matiere chart ok
 $route['api/getChartRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getChartRm/$1/$2/$3/$4/$5/$6';
-
+//get Details Tamby
+$route['api/getDetailsMatiere/(:any)/(:any)'] = 'api/Matiere/getDetailsMatiere/$1/$2';
 
 //Creer compte Login //ok
 $route['api/ajoutRmAssocier'] = 'api/CompteRm/ajoutRmAssocier';
@@ -172,3 +179,5 @@ $route['api/getLogin'] = 'api/CompteRm/getLogin';
 $route['api/getGradeMention'] = 'api/CompteRm/getGradeMention';
 //Chagment mot de passe
 $route['api/changeMdp'] = 'api/CompteRm/changeMdp';
+
+

@@ -9,7 +9,7 @@ class Classe extends RestController
     public function __construct()
     {
         header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin,Authorization, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         $method = $_SERVER['REQUEST_METHOD'];
         if($method == "OPTIONS") {
@@ -17,6 +17,7 @@ class Classe extends RestController
         }
         parent::__construct();
         $this->load->database();
+        $this->load->library('Authorization_Token');	
     }
 
 
@@ -153,5 +154,131 @@ class Classe extends RestController
         $this->response($resRecherche);
     }
 
+     //Affiche classe et le nombre d'étudiant
+     public function getNombreClasse_get($rm_id,$mention_nom,$grad_id,$anne_univ)
+     {
+        $sql="select distinct niv_id from public.affiche_etu_niv_parc_grad_rm where mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."' ";
+
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $query = $this->db->query($sql);
+                $res = $query->result();
+
+                for ($i=0; $i < count($res); $i++) { 
+                    $sql3="SELECT  niv_libelle as nom,count(*) 
+                    FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
+                    group by niv_libelle ";
+                    $query3 = $this->db->query($sql3);
+                    $req3 = $query3->row_array();
+                    $res[$i]=$req3;
+                }
+               
+                $this->response($res, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
+     //Affiche classe et le nombre d'étudiant
+     public function getAnneUniv_get()
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $this->db->select("annee_univ  as label");
+                $this->db->select('annee_univ as value');
+                $queryanne_univ = $this->db->get("annee_univ");
+                $anne_univ = $queryanne_univ->result();
+
+                $this->response($anne_univ, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
+
+     public function postGroupeTamby_post()
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+               
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                $dataGroup=array();
+                
+                //Element dans le details
+                $dataGroup['anne_univ']=$data['anne_univ'];
+                $dataGroup['niveau']=$data['niveau'];
+                $dataGroup['mention']=$data['mention'];
+                $dataGroup['td']=$data['td'];
+                $dataGroup['tp']=$data['tp'];
+                try {
+                    $this->db->where('anne_univ', $dataGroup['anne_univ']);
+                    $this->db->where('niveau', $dataGroup['niveau']);
+                    $this->db->where('mention', $dataGroup['mention']);
+                    $this->db->delete('groupe_tamby');
+
+                    //Insertion dans la table groupe_tamby
+                    $this->db->insert('groupe_tamby', $dataGroup);
+                } catch (\Throwable $th) {
+                    $this->db->insert('groupe_tamby', $dataGroup);
+                    //throw $th;
+                }
+
+                $response = [
+                    'etat' => 'success',
+                    'situation' => 'Enregistrement ',
+                    'message' => 'Enregistrement avec succé !',
+                ];
+                $this->response($response);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+     public function getGrouptamby_get($anne_univ,$niveau,$mention)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$niveau."' and mention='".$mention."'";
+                $query3 = $this->db->query($sql);
+                $group_tamby = $query3->row_array();
+
+                $this->response($group_tamby, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+      
+     }
 
 }
