@@ -181,3 +181,6 @@ $route['api/getGradeMention'] = 'api/CompteRm/getGradeMention';
 $route['api/changeMdp'] = 'api/CompteRm/changeMdp';
 
 
+//Tableau d'affichage
+
+$route['api/getTableauAffiche/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3';
