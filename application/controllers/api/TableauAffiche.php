@@ -75,6 +75,33 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
+     public function getTableauAfficheSommeEtEdEp_get($anne_univ,$mention_nom,$niveau_id,$rm_id)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $sql4="SELECT 
+                SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
+                SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
+                SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep
+                from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                anne_univ_tamby_rm anne,detailstamby det 
+                where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                AND anne.id_details=det.id_details and  niv_id='".$niveau_id."' and nom_mention='".$mention_nom."' and info.rm_id='".$rm_id."'";
+                $query4 = $this->db->query($sql4);
+                $req4 = $query4->row_array();
+                $this->response($req4, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
      //Affiche classe et le nombre d'étudiant
      public function getTitreTableau_get($rm_id,$mention_nom,$niveau_id,$grad_id,$anne_univ)
      {

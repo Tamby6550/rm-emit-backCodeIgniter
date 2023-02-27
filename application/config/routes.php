@@ -183,6 +183,9 @@ $route['api/changeMdp'] = 'api/CompteRm/changeMdp';
 
 
 //Tableau d'affichage
-
+//Affiche les données matière,vheure,credit base sns..
+$route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
+//Affiche les sommes total de ET,ED,EP sur ce niveau
+$route['api/getTableauAfficheSommeEtEdEp/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheSommeEtEdEp/$1/$2/$3/$4';
 $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
 $route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';
