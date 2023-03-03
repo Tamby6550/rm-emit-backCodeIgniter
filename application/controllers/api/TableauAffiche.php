@@ -152,6 +152,49 @@ class TableauAffiche extends RestController
 		else {
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
-      
+     }
+     public function getTableauAfficheTableauA_get($anne_univ,$mention_nom,$prof_id)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                    $res=array();
+                    $sql4="SELECT 
+                    SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
+                    SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
+                    SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
+                    SUM(CAST(det.base_ep AS DECIMAL)) AS tbase_ep,
+                    SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
+                    SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
+                    SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
+                        
+                    (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))) as heureDeclare
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                    anne_univ_tamby_rm anne,detailstamby det 
+                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'";
+                    $query4 = $this->db->query($sql4);
+                    $res = $query4->result();
+
+                    $sql3="SELECT  info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                    anne_univ_tamby_rm anne,detailstamby det 
+                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'";
+                    $query3 = $this->db->query($sql3);
+                    $res['0']->detail = $query3->result();
+
+                
+                $this->response($res, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
      }
 }
