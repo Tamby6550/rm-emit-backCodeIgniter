@@ -155,13 +155,16 @@ class TableauAffiche extends RestController
      }
      public function getTableauAfficheTableauA_get($anne_univ,$mention_nom,$prof_id)
      {
+
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
             if ($decodedToken['status'])
             {
+                    $total=array();
                     $res=array();
                     $sql4="SELECT 
+                    info.parc_libelle,
                     SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
                     SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
                     SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
@@ -174,20 +177,96 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'  group by info.parc_libelle";
                     $query4 = $this->db->query($sql4);
-                    $res = $query4->result();
+                    $total = $query4->row_array();
 
                     $sql3="SELECT  info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' ";
                     $query3 = $this->db->query($sql3);
-                    $res['0']->detail = $query3->result();
+                    $res= $query3->result();
 
+                    for ($i=0; $i < count($res); $i++) { 
+                        $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$res[$i]->abbr_niveau."' and mention='".$mention_nom."'";
+                        $query5 = $this->db->query($sql);
+                        $group_tamby = $query5->row_array();
+                        $res[$i]->nbgroup=$group_tamby;
+
+                    }
+                    $reponse = [
+                        'total' => $total,
+                        'detail' =>$res
+                    ];
                 
-                $this->response($res, RestController::HTTP_OK);
+                $this->response($reponse, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+     public function getTableauAfficheTableauB_get($anne_univ,$mention_nom,$prof_id,$niveau_id)
+     {
+        $niveau='';
+        if ($niveau_id=='1' || $niveau_id=='2' || $niveau_id=='3') {
+            $niveau='L'.$niveau_id;
+        }else if ($niveau_id=='4') {
+            $niveau='M1';
+        }else{
+            $niveau='M2';
+
+        }
+
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                    $total=array();
+                    $res=array();
+                    $sql4="SELECT 
+                    info.parc_libelle,
+                    SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
+                    SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
+                    SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
+                    SUM(CAST(det.base_ep AS DECIMAL)) AS tbase_ep,
+                    SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
+                    SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
+                    SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
+                        
+                    (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))) as heureDeclare
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                    anne_univ_tamby_rm anne,detailstamby det 
+                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.niv_id='".$niveau_id."' group by info.parc_libelle";
+                    $query4 = $this->db->query($sql4);
+                    $total = $query4->row_array();
+
+                    $sql3="SELECT  info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                    anne_univ_tamby_rm anne,detailstamby det 
+                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.niv_id='".$niveau_id."'";
+                    $query3 = $this->db->query($sql3);
+                    $res= $query3->result();
+
+                    $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$niveau."' and mention='".$mention_nom."'";
+                    $query5 = $this->db->query($sql);
+                    $group_tamby = $query5->row_array();
+
+                    $reponse = [
+                        'total' => $total,
+                        'detail' =>$res,
+                        'group_tamby' =>$group_tamby,
+                    ];
+                
+                $this->response($reponse, RestController::HTTP_OK);
             }
             else {
                 $this->response($decodedToken);

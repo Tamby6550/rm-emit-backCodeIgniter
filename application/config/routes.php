@@ -145,13 +145,13 @@ $route['api/getNiveau/(:any)/(:any)/(:any)'] = 'api/Classe/getNiveau/$1/$2/$3';
 
 //controlleur Engagement
 //Get Engagement
-$route['api/getEngagement'] = 'api/Engagement/getEngagement';
+$route['api/getEngagement/(:any)/(:any)'] = 'api/Engagement/getEngagement/$1/$2';
 //Ajout engagement
 $route['api/ajoutEngagement'] = 'api/Engagement/ajoutEngagement';
 //update engagement
 $route['api/updateEngagement'] = 'api/Engagement/updateEngagement';
 //delete engagement
-$route['api/supprimerEngagement/(:any)'] = 'api/Engagement/supprimerEngagement/$1';
+$route['api/deleteEngagement'] = 'api/Engagement/deleteEngagement';
 
 
 
@@ -189,4 +189,5 @@ $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffich
 $route['api/getTableauAfficheSommeEtEdEp/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheSommeEtEdEp/$1/$2/$3/$4';
 $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
 $route['api/getTableauAfficheTableauA/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauA/$1/$2/$3';
+$route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4';
 $route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';
