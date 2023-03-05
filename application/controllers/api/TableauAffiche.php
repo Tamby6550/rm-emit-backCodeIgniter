@@ -153,7 +153,7 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getTableauAfficheTableauA_get($anne_univ,$mention_nom,$prof_id)
+     public function getTableauAfficheTableauA_get($anne_univ,$mention_nom,$prof_id,$grad_id)
      {
 
         $headers = $this->input->request_headers(); 
@@ -177,7 +177,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."'  group by info.parc_libelle";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' group by info.parc_libelle";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
@@ -185,7 +185,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' ";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
@@ -211,17 +211,9 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getTableauAfficheTableauB_get($anne_univ,$mention_nom,$prof_id,$niveau_id)
+     public function getTableauAfficheTableauB_get($anne_univ,$mention_nom,$prof_id,$grad_id)
      {
-        $niveau='';
-        if ($niveau_id=='1' || $niveau_id=='2' || $niveau_id=='3') {
-            $niveau='L'.$niveau_id;
-        }else if ($niveau_id=='4') {
-            $niveau='M1';
-        }else{
-            $niveau='M2';
-
-        }
+        
 
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -232,38 +224,37 @@ class TableauAffiche extends RestController
                     $res=array();
                     $sql4="SELECT 
                     info.parc_libelle,
-                    SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
-                    SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
-                    SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
-                    SUM(CAST(det.base_ep AS DECIMAL)) AS tbase_ep,
                     SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
                     SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
                     SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
-                        
-                    (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))) as heureDeclare
+                    
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."') as total_enga,
+                                
+                    (SUM(CAST(det.total_ed AS DECIMAL))+(select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')) as total_ed_enga,
+                    
+                    (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))+
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')
+                     ) as heureDeclare
+                     
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.niv_id='".$niveau_id."' group by info.parc_libelle";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' group by info.parc_libelle";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
-                    $sql3="SELECT  info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
-                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
-                    anne_univ_tamby_rm anne,detailstamby det 
-                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.niv_id='".$niveau_id."'";
+                    $sql3="select * from engagement eng,faire_engag faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='1' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
-                    $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$niveau."' and mention='".$mention_nom."'";
-                    $query5 = $this->db->query($sql);
-                    $group_tamby = $query5->row_array();
 
                     $reponse = [
                         'total' => $total,
                         'detail' =>$res,
-                        'group_tamby' =>$group_tamby,
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);

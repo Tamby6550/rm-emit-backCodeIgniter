@@ -47,11 +47,9 @@ class Engagement extends RestController
                $datafaire['annee_univ']=$data['annee_univ'];
                $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'];
 
-               
                try {
                    $this->db->where('id_enga', $dataEngagement['id_enga']);
-                   $this->db->where('nom_enga', $dataEngagement['nom_enga']);
-                   $verf=$this->db->get('engagement');
+                   $verf=$this->db->get('faire_engag');
                    $res_verf = $verf->result();
 
                    //raha efa misy de atao mis a jour
@@ -62,7 +60,6 @@ class Engagement extends RestController
                        $this->db->set('date_engamnt1', $dataEngagement['date_engamnt1']);
                        $this->db->set('date_engamnt2', $dataEngagement['date_engamnt2']);
                        $this->db->where('id_enga', $dataEngagement['id_enga']);
-                       $this->db->where('nom_enga', $dataEngagement['nom_enga']);
                        $this->db->update('engagement');
                    }
                    //Sinon inserena
@@ -84,6 +81,8 @@ class Engagement extends RestController
                    'etat' => 'success',
                    'situation' => 'Enregistrement Engagement',
                    'message' => 'Mis à jour succé !',
+                   'sql' => $res_verf,
+                   
                ];
                $this->response($response);
            }
