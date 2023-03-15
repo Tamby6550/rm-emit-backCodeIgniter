@@ -126,7 +126,7 @@ class TableauAffiche extends RestController
                 $query = $this->db->query($sql);
                 $res = $query->row_array();
 
-                $sql1="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$niveau."' and mention='".$mention_nom."'";
+                $sql1="Select * from groupe_tamby where anne_univ='".$anne_univ."' and grade='".$grad_id."' and mention='".$mention_nom."'";
                 $query3 = $this->db->query($sql1);
                 $group_tamby = $query3->row_array();
 
@@ -153,7 +153,7 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getTableauAfficheTableauA_get($anne_univ,$mention_nom,$prof_id,$grad_id)
+     public function getTableauAfficheTableauA_get($rm_id,$anne_univ,$mention_nom,$prof_id,$grad_id)
      {
 
         $headers = $this->input->request_headers(); 
@@ -165,6 +165,8 @@ class TableauAffiche extends RestController
                     $res=array();
                     $sql4="SELECT 
                     info.parc_libelle,
+                    prof.prof_type,
+                    prof.prof_titre,
                     SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
                     SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
                     SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
@@ -175,9 +177,9 @@ class TableauAffiche extends RestController
                         
                     (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))) as heureDeclare
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
-                    anne_univ_tamby_rm anne,detailstamby det 
-                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' group by info.parc_libelle";
+                    anne_univ_tamby_rm anne,detailstamby det ,professeur prof
+                    where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' group by info.parc_libelle,prof.prof_type,prof.prof_titre";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
@@ -189,16 +191,23 @@ class TableauAffiche extends RestController
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
-                    for ($i=0; $i < count($res); $i++) { 
-                        $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$res[$i]->abbr_niveau."' and mention='".$mention_nom."'";
-                        $query5 = $this->db->query($sql);
-                        $group_tamby = $query5->row_array();
-                        $res[$i]->nbgroup=$group_tamby;
+                    $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and grade='".$grad_id."' and mention='".$mention_nom."'";
+                    $query5 = $this->db->query($sql);
+                    $group_tamby = $query5->row_array();
 
+                    
+                    for ($i=0; $i < count($res); $i++) { 
+                        $sql="SELECT count(*) 
+                        FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
+                        group by niv_libelle ";
+                        $query = $this->db->query($sql);
+                        $nbre_classe = $query->row_array();
+                        $res[$i]->nbgroup=$nbre_classe;
                     }
                     $reponse = [
                         'total' => $total,
-                        'detail' =>$res
+                        'detail' =>$res,
+                        'group_tamby' =>$group_tamby,
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);
@@ -213,8 +222,6 @@ class TableauAffiche extends RestController
      }
      public function getTableauAfficheTableauB_get($anne_univ,$mention_nom,$prof_id,$grad_id)
      {
-        
-
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
@@ -224,6 +231,8 @@ class TableauAffiche extends RestController
                     $res=array();
                     $sql4="SELECT 
                     info.parc_libelle,
+                    prof.prof_type,
+                    prof.prof_titre,
                     SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
                     SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
                     SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
@@ -240,9 +249,9 @@ class TableauAffiche extends RestController
                      ) as heureDeclare
                      
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
-                    anne_univ_tamby_rm anne,detailstamby det 
-                    where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' group by info.parc_libelle";
+                    anne_univ_tamby_rm anne,detailstamby det ,professeur prof
+                    where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' group by info.parc_libelle,prof.prof_type,prof.prof_titre";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 

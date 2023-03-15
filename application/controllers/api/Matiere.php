@@ -72,6 +72,19 @@ class Matiere extends RestController
                         $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
                     }
                 }
+
+                //Nombre de classe
+                $nbrClasse="SELECT  count(*) as nmbre_classe
+                FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niv_id."' and mention_nom='".$mention_nom."' 
+                and grad_id='".$grad_id."' 
+                and rm_id='".$rm_id."' 
+                and annee_univ='".$anne_univ."' 
+                group by niv_libelle ";
+                $rq_nbr = $this->db->query($nbrClasse);
+                $nbr_classe = $rq_nbr->row_array();
+                 //Nombre de classe
+
+
                 $sql=$sql . $condition;
                 $query = $this->db->query($sql);
                 $res = $query->result();
@@ -93,8 +106,8 @@ class Matiere extends RestController
                     $niveau = $queryniveau->result();
                 }
 
-
-                    
+                
+                   
                     $this->db->select("grad_nom  as label");
                     $this->db->select('grad_id as value');
                     $this->db->where('grad_nom<>',  'admin');
@@ -112,7 +125,8 @@ class Matiere extends RestController
                         'niveau' =>$niveau,
                         'sql' =>$sql,
                         'grade' => $grade,
-                        'mention'=> $mention
+                        'mention'=> $mention,
+                        'nbre_classe'=> $nbr_classe
                     ];
                
                 $this->response($reponse, RestController::HTTP_OK);

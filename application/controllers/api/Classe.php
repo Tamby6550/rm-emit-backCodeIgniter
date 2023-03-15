@@ -249,13 +249,14 @@ class Classe extends RestController
                 
                 //Element dans le details
                 $dataGroup['anne_univ']=$data['anne_univ'];
-                $dataGroup['niveau']=$data['niveau'];
+                $dataGroup['grade']=$data['grade'];
                 $dataGroup['mention']=$data['mention'];
-                $dataGroup['td']=$data['td'];
-                $dataGroup['tp']=$data['tp'];
+                $dataGroup['diviser_td']=$data['diviser_td'];
+                $dataGroup['diviser_tp']=$data['diviser_tp'];
+
                 try {
                     $this->db->where('anne_univ', $dataGroup['anne_univ']);
-                    $this->db->where('niveau', $dataGroup['niveau']);
+                    $this->db->where('grade', $dataGroup['grade']);
                     $this->db->where('mention', $dataGroup['mention']);
                     $this->db->delete('groupe_tamby');
 
@@ -281,14 +282,14 @@ class Classe extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getGrouptamby_get($anne_univ,$niveau,$mention)
+     public function getGrouptamby_get($anne_univ,$grade,$mention)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
             if ($decodedToken['status'])
             {
-                $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and niveau='".$niveau."' and mention='".$mention."'";
+                $sql="Select * from groupe_tamby where anne_univ='".$anne_univ."' and grade='".$grade."' and mention='".$mention."'";
                 $query3 = $this->db->query($sql);
                 $group_tamby = $query3->row_array();
 
