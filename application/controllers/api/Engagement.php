@@ -20,7 +20,7 @@ class Engagement extends RestController
     }
    
 
-    //Ajout engagement
+    //Ajout engagement_tamby
     public function ajoutEngagement_post()
     {
        $headers = $this->input->request_headers(); 
@@ -49,7 +49,7 @@ class Engagement extends RestController
 
                try {
                    $this->db->where('id_enga', $dataEngagement['id_enga']);
-                   $verf=$this->db->get('faire_engag');
+                   $verf=$this->db->get('faire_engag_tamby');
                    $res_verf = $verf->result();
 
                    //raha efa misy de atao mis a jour
@@ -60,15 +60,15 @@ class Engagement extends RestController
                        $this->db->set('date_engamnt1', $dataEngagement['date_engamnt1']);
                        $this->db->set('date_engamnt2', $dataEngagement['date_engamnt2']);
                        $this->db->where('id_enga', $dataEngagement['id_enga']);
-                       $this->db->update('engagement');
+                       $this->db->update('engagement_tamby');
                    }
                    //Sinon inserena
                    else {
                        //Insertion dans la table detailstamby
-                       $this->db->insert('engagement', $dataEngagement);
+                       $this->db->insert('engagement_tamby', $dataEngagement);
                        
                        //Insertion table faire
-                       $this->db->insert('faire_engag', $datafaire);
+                       $this->db->insert('faire_engag_tamby', $datafaire);
                    }
                    
                } catch (\Throwable $th) {
@@ -103,7 +103,7 @@ class Engagement extends RestController
             if ($decodedToken['status'])
             {
                 $sql="select eng.nom_enga,eng.nbre_etu,eng.valeur,eng.date_engamnt1,eng.date_engamnt2 ,faire.annee_univ
-                from engagement eng, faire_engag faire 
+                from engagement_tamby eng, faire_engag_tamby faire 
                 where faire.id_enga=eng.id_enga 
                 and faire.prof_id='".$prof_id."' and eng.grad_id='".$grad_id."'";
                 $query3 = $this->db->query($sql);
@@ -130,10 +130,10 @@ class Engagement extends RestController
                 $data = json_decode(file_get_contents('php://input'), true);
 
                 $this->db->where('id_enga', $data['id_enga']);
-                $this->db->delete('faire_engag');
+                $this->db->delete('faire_engag_tamby');
                 $this->db->where('id_enga', $data['id_enga']);
-                $this->db->delete('engagement');
-                // $this->db->delete('engagement');
+                $this->db->delete('engagement_tamby');
+                // $this->db->delete('engagement_tamby');
                 $response = [
                     'etat' => 'info',
                     'status' => 'Suppression reuissie',

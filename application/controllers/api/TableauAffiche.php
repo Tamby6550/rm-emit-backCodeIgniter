@@ -167,6 +167,7 @@ class TableauAffiche extends RestController
                     info.parc_libelle,
                     prof.prof_type,
                     prof.prof_titre,
+                    prof.prof_grade,
                     SUM(CAST(info.vheure AS DECIMAL)) AS tvheure , 
                     SUM(CAST(det.base_et AS DECIMAL)) AS tbase_et,
                     SUM(CAST(det.base_ed AS DECIMAL)) AS tbase_ed,
@@ -179,7 +180,8 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' group by info.parc_libelle,prof.prof_type,prof.prof_titre";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."'
+                    group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
@@ -233,29 +235,31 @@ class TableauAffiche extends RestController
                     info.parc_libelle,
                     prof.prof_type,
                     prof.prof_titre,
+                    prof.prof_grade,
                     SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
                     SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
                     SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
                     
-                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
                      where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."') as total_enga,
                                 
-                    (SUM(CAST(det.total_ed AS DECIMAL))+(select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                    (SUM(CAST(det.total_ed AS DECIMAL))+(select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
                      where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')) as total_ed_enga,
                     
                     (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))+
-                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement eng,faire_engag faire 
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
                      where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')
                      ) as heureDeclare
                      
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' group by info.parc_libelle,prof.prof_type,prof.prof_titre";
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' 
+                    group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
-                    $sql3="select * from engagement eng,faire_engag faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
+                    $sql3="select * from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
                     and faire.annee_univ='".$anne_univ."' and eng.grad_id='1' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
