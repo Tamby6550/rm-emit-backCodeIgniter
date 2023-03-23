@@ -494,7 +494,6 @@ class Matiere extends RestController
                             $dtres=[$res['termine_sn'],$res['termine_sr']];
                         }else{
                             $dtres=['0','0','0'];
-    
                         }
                     }
                 }

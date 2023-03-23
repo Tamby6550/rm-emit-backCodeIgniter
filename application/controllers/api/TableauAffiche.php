@@ -180,7 +180,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."'
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' and info.rm_id='".$rm_id."'
                     group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
@@ -222,7 +222,7 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getTableauAfficheTableauB_get($anne_univ,$mention_nom,$prof_id,$grad_id)
+     public function getTableauAfficheTableauB_get($rm_id,$anne_univ,$mention_nom,$prof_id,$grad_id)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -254,13 +254,13 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='1' 
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' and info.rm_id='".$rm_id."'
                     group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
                     $sql3="select * from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='1' ";
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
@@ -271,6 +271,54 @@ class TableauAffiche extends RestController
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+     public function getTableauAfficheTableauFinale_get($rm_id,$anne_univ,$mention_nom,$grad_id)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                    $total=array();
+                    $res=array();
+                    $sql4="SELECT 
+                    info.prof_id,
+                    info.nom_prof,
+                    info.prof_grade,
+                    info.attribution,
+                    SUM(CAST(det.total_et AS DECIMAL)) AS ttotal_et,
+                    SUM(CAST(det.total_ed AS DECIMAL)) AS ttotal_ed,
+                    SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
+                             
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) 
+                    from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Encadrement%') as encadrement,
+                                
+                    (select SUM(CAST(eng.valeur AS DECIMAL))  
+                    from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Soutenance%') as soutenance,
+                    
+                    (select SUM(CAST(eng.valeur AS DECIMAL)) 
+                    from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Voyages%') as voyages
+                    
+                    from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+                    anne_univ_tamby_rm anne,detailstamby det ,professeur prof
+                    where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."'
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."'  and info.grad_id='".$grad_id."' and  info.rm_id='".$rm_id."'
+                    group by info.nom_prof,info.prof_id,info.prof_grade,info.attribution ";
+                    $query4 = $this->db->query($sql4);
+                    $res = $query4->result();
+
+                $this->response($res, RestController::HTTP_OK);
             }
             else {
                 $this->response($decodedToken);

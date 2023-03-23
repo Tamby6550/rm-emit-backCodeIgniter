@@ -189,5 +189,6 @@ $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffich
 $route['api/getTableauAfficheSommeEtEdEp/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheSommeEtEdEp/$1/$2/$3/$4';
 $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
 $route['api/getTableauAfficheTableauA/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauA/$1/$2/$3/$4/$5';
-$route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4';
+$route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4/$5';
 $route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';
+$route['api/getTableauAfficheTableauFinale/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauFinale/$1/$2/$3/$4';

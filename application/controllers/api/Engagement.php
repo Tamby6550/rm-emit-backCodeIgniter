@@ -42,6 +42,7 @@ class Engagement extends RestController
                $dataEngagement['date_engamnt1']=$data['date_engamnt1'];
                $dataEngagement['date_engamnt2']=$data['date_engamnt2'];
                $dataEngagement['grad_id']=$data['grad_id'];
+               $dataEngagement['mention']=$data['mention'];
 
                $datafaire['prof_id']=$data['prof_id'];
                $datafaire['annee_univ']=$data['annee_univ'];
