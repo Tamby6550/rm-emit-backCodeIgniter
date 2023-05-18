@@ -185,7 +185,7 @@ class TableauAffiche extends RestController
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
-                    $sql3="SELECT  info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
+                    $sql3="SELECT distinct info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
