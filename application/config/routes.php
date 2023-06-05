@@ -145,7 +145,7 @@ $route['api/getNiveau/(:any)/(:any)/(:any)'] = 'api/Classe/getNiveau/$1/$2/$3';
 
 //controlleur Engagement
 //Get Engagement
-$route['api/getEngagement/(:any)/(:any)'] = 'api/Engagement/getEngagement/$1/$2';
+$route['api/getEngagement/(:any)/(:any)/(:any)'] = 'api/Engagement/getEngagement/$1/$2/$3';
 //Ajout engagement
 $route['api/ajoutEngagement'] = 'api/Engagement/ajoutEngagement';
 //update engagement

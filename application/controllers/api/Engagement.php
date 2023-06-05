@@ -35,7 +35,7 @@ class Engagement extends RestController
                $datafaire=array();
                
                //Element dans le details
-               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'];
+               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'];
                $dataEngagement['nom_enga']=$data['nom_enga'];
                $dataEngagement['nbre_etu']=$data['nbre_etu'];
                $dataEngagement['valeur']=$data['valeur'];
@@ -46,7 +46,7 @@ class Engagement extends RestController
 
                $datafaire['prof_id']=$data['prof_id'];
                $datafaire['annee_univ']=$data['annee_univ'];
-               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'];
+               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'];
 
                try {
                    $this->db->where('id_enga', $dataEngagement['id_enga']);
@@ -96,7 +96,7 @@ class Engagement extends RestController
        }
     }
 
-    public function getEngagement_get($prof_id,$grad_id)
+    public function getEngagement_get($prof_id,$grad_id,$mention)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -106,7 +106,7 @@ class Engagement extends RestController
                 $sql="select eng.nom_enga,eng.nbre_etu,eng.valeur,eng.date_engamnt1,eng.date_engamnt2 ,faire.annee_univ
                 from engagement_tamby eng, faire_engag_tamby faire 
                 where faire.id_enga=eng.id_enga 
-                and faire.prof_id='".$prof_id."' and eng.grad_id='".$grad_id."'";
+                and faire.prof_id='".$prof_id."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention."' ";
                 $query3 = $this->db->query($sql);
                 $res = $query3->result();
 
