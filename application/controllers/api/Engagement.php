@@ -35,7 +35,7 @@ class Engagement extends RestController
                $datafaire=array();
                
                //Element dans le details
-               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'];
+               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'];
                $dataEngagement['nom_enga']=$data['nom_enga'];
                $dataEngagement['nbre_etu']=$data['nbre_etu'];
                $dataEngagement['valeur']=$data['valeur'];
@@ -46,10 +46,11 @@ class Engagement extends RestController
 
                $datafaire['prof_id']=$data['prof_id'];
                $datafaire['annee_univ']=$data['annee_univ'];
-               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'];
+               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'];
 
                try {
-                   $this->db->where('id_enga', $dataEngagement['id_enga']);
+                   $this->db->where('id_enga', $datafaire['id_enga']);
+                   $this->db->where('annee_univ', $datafaire['annee_univ']);
                    $verf=$this->db->get('faire_engag_tamby');
                    $res_verf = $verf->result();
 
