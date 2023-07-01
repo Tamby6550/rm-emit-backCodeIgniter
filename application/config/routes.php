@@ -192,3 +192,12 @@ $route['api/getTableauAfficheTableauA/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'ap
 $route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4/$5';
 $route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';
 $route['api/getTableauAfficheTableauFinale/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauFinale/$1/$2/$3/$4';
+
+
+//Table classe
+//Ajout Classe Nombre etudiant manuelle
+$route['api/postClassetambyapp'] = 'api/Classe/postClassetambyapp';
+//Get Classe Nombre etudiant manuelle
+$route['api/getClassetamby'] = 'api/Classe/getClassetamby';
+//update Classe
+$route['api/updateClassetamby'] = 'api/Classe/updateClassetamby';

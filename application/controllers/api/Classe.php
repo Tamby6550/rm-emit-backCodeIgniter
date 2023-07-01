@@ -302,7 +302,112 @@ class Classe extends RestController
 		else {
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
-      
      }
 
+
+
+     //***********************-----------------------table  classe_tamby_app----------------***************/
+
+     public function postClassetambyapp_post()
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+               
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                $dataClass=array();
+                
+
+
+                //Element dans le details
+                $dataClass['classe_id']=$data['classe_grade'].''.$data['classe_mention'].''.$data['classe_annee_univ'].''.$data['classe_niveau'];
+
+                $dataClass['classe_grade']=$data['classe_grade'];
+                $dataClass['classe_mention']=$data['classe_mention'];
+                $dataClass['classe_annee_univ']=$data['classe_annee_univ'];
+                $dataClass['classe_niveau']=$data['classe_niveau'];
+                $dataClass['classe_nbre_etud']=$data['classe_nbre_etud'];
+
+                try {
+                    $this->db->where('classe_id', $dataClass['anne_univ']);
+                    $this->db->delete('classe_tamby_app');
+
+                    //Insertion dans la table 
+                    $this->db->insert('classe_tamby_app', $dataClass);
+                } catch (\Throwable $th) {
+                    $this->db->insert('classe_tamby_app', $dataClass);
+                    //throw $th;
+                }
+
+                $response = [
+                    'etat' => 'success',
+                    'situation' => 'Enregistrement ',
+                    'message' => 'Enregistrement avec succé !',
+                ];
+                $this->response($response);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+
+     public function getClassetamby_get($classe_grade,$classe_mention,$classe_annee_univ,$classe_niveau)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                $sql="select * from classe_tamby_app where classe_annee_univ='".$classe_annee_univ."' and classe_grade='".$classe_grade."' and classe_mention='".$classe_mention."'";
+                $query3 = $this->db->query($sql);
+                $classe_tamby = $query3->row_array();
+
+                $this->response($classe_tamby, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+
+     public function updateClassetamby_put()
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+                // Récupérer les données de la requête
+                $data = json_decode(file_get_contents('php://input'), true);
+                $dataClass['classe_nbre_etud']=$data['classe_nbre_etud'];
+                $dataClass['classe_id']=$data['classe_grade'].''.$data['classe_mention'].''.$data['classe_annee_univ'].''.$data['classe_niveau'];
+                // Mettre à jour l'enregistrement dans la base de données
+                $this->db->set('classe_nbre_etud', $dataClass['classe_nbre_etud']);
+                $this->db->where('classe_id', $dataClass['classe_id']);
+                $this->db->update('classe_tamby_app');
+                $response = [
+                    'etat' => 'success',
+                    'status' => 'success',
+                    'message' => 'L\'enregistrement a été mis à jour avec succès',
+                ];
+                $this->response($response);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
 }
