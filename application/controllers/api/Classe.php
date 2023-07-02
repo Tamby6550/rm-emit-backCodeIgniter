@@ -332,7 +332,7 @@ class Classe extends RestController
                 $dataClass['classe_nbre_etud']=$data['classe_nbre_etud'];
 
                 try {
-                    $this->db->where('classe_id', $dataClass['anne_univ']);
+                    $this->db->where('classe_id', $dataClass['classe_id']);
                     $this->db->delete('classe_tamby_app');
 
                     //Insertion dans la table 
@@ -358,7 +358,7 @@ class Classe extends RestController
 		}
      }
 
-     public function getClassetamby_get($classe_grade,$classe_mention,$classe_annee_univ,$classe_niveau)
+     public function getClassetamby_get($classe_grade,$classe_mention,$classe_annee_univ)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -367,7 +367,8 @@ class Classe extends RestController
             {
                 $sql="select * from classe_tamby_app where classe_annee_univ='".$classe_annee_univ."' and classe_grade='".$classe_grade."' and classe_mention='".$classe_mention."'";
                 $query3 = $this->db->query($sql);
-                $classe_tamby = $query3->row_array();
+                // $niveau = $queryniveau->result();
+                $classe_tamby = $query3->result();
 
                 $this->response($classe_tamby, RestController::HTTP_OK);
             }

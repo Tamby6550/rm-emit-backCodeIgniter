@@ -198,6 +198,6 @@ $route['api/getTableauAfficheTableauFinale/(:any)/(:any)/(:any)/(:any)'] = 'api/
 //Ajout Classe Nombre etudiant manuelle
 $route['api/postClassetambyapp'] = 'api/Classe/postClassetambyapp';
 //Get Classe Nombre etudiant manuelle
-$route['api/getClassetamby'] = 'api/Classe/getClassetamby';
+$route['api/getClassetamby/(:any)/(:any)/(:any)'] = 'api/Classe/getClassetamby/$1/$2/$3';
 //update Classe
 $route['api/updateClassetamby'] = 'api/Classe/updateClassetamby';

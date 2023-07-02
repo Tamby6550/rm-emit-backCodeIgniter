@@ -120,9 +120,10 @@ class TableauAffiche extends RestController
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
             if ($decodedToken['status'])
             {
-                $sql="SELECT count(*) 
-                FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niveau_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
-                group by niv_libelle ";
+                // $sql="SELECT count(*) 
+                // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niveau_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
+                // group by niv_libelle ";
+                $sql="select classe_nbre_etud as count from classe_tamby_app where classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."' ";
                 $query = $this->db->query($sql);
                 $res = $query->row_array();
 
@@ -199,9 +200,18 @@ class TableauAffiche extends RestController
 
                     
                     for ($i=0; $i < count($res); $i++) { 
-                        $sql="SELECT count(*) 
-                        FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
-                        group by niv_libelle ";
+                        $niveau='';
+                        if ($res[$i]->niv_id=='1' || $res[$i]->niv_id=='2' || $res[$i]->niv_id=='3') {
+                            $niveau='L'.$res[$i]->niv_id;
+                        }else if ($res[$i]->niv_id=='4') {
+                            $niveau='M1';
+                        }else{
+                            $niveau='M2';
+                        }
+                        // $sql="SELECT count(*) 
+                        // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
+                        // group by niv_libelle ";
+                        $sql="select classe_nbre_etud as count from classe_tamby_app where classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."'";
                         $query = $this->db->query($sql);
                         $nbre_classe = $query->row_array();
                         $res[$i]->nbgroup=$nbre_classe;
