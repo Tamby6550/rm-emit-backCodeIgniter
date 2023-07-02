@@ -173,6 +173,16 @@ class CompteRm extends RestController
         }
         else{
             $dataRM['grad_id']=$data['grad_id'];
+
+            //get Liste Parcours dans cette mention
+            $this->db->select(" parc_nom as value");
+            $this->db->select("parc_nom as label");
+            $this->db->where('grad_id', $dataRM['grad_id']);
+            $this->db->where('mention_nom', $dataRM['mention']);
+            $query1 = $this->db->get("parcours");
+            $resParcours = $query1->result();
+
+            //Information Compte RM
             $this->db->select("rm_id");
             $this->db->where('motpasse', $mdp);
             $this->db->where('mention', $dataRM['mention']);
@@ -190,9 +200,10 @@ class CompteRm extends RestController
                     $payload = array(
                         'rm_id' => $resmdp['rm_id'],
                         'nom' => $resmdp['nom'],
-                        'mention' => $resmdp['mention']
+                        'mention' => $resmdp['mention'],
                     );
-               
+                    //Manampy anle ao array
+                    $resmdp['parcours_']=$resParcours;
                     $tokenData = $this->authorization_token->generateToken($payload);
                 
                     $response = [

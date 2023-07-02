@@ -186,12 +186,14 @@ $route['api/changeMdp'] = 'api/CompteRm/changeMdp';
 //Affiche les données matière,vheure,credit base sns..
 $route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
 //Affiche les sommes total de ET,ED,EP sur ce niveau
+$route['api/getTableauAfficheSommeEtEdEpParcours/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheSommeEtEdEpParcours/$1/$2/$3/$4/$5';
+$route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4/$5';
 $route['api/getTableauAfficheSommeEtEdEp/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheSommeEtEdEp/$1/$2/$3/$4';
-$route['api/getTableauAffiche/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAffiche/$1/$2/$3/$4';
-$route['api/getTableauAfficheTableauA/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauA/$1/$2/$3/$4/$5';
-$route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4/$5';
-$route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5';
+$route['api/getTableauAfficheTableauA/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauA/$1/$2/$3/$4/$5/$6';
+$route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauB/$1/$2/$3/$4/$5/$6';
+$route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5/$6';
 $route['api/getTableauAfficheTableauFinale/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauFinale/$1/$2/$3/$4';
+$route['api/getParcoursDansMention/(:any)/(:any)'] = 'api/TableauAffiche/getParcoursDansMention/$1/$2';
 
 
 //Table classe

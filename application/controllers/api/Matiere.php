@@ -73,13 +73,26 @@ class Matiere extends RestController
                     }
                 }
 
+                $niveau__='';
+                if ($niv_id=='1' || $niv_id=='2' || $niv_id=='3') {
+                    $niveau__='L'.$niv_id;
+                }else if ($niv_id=='4') {
+                    $niveau__='M1';
+                }else{
+                    $niveau__='M2';
+        
+                }
+
                 //Nombre de classe
-                $nbrClasse="SELECT  count(*) as nmbre_classe
-                FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niv_id."' and mention_nom='".$mention_nom."' 
-                and grad_id='".$grad_id."' 
-                and rm_id='".$rm_id."' 
-                and annee_univ='".$anne_univ."' 
-                group by niv_libelle ";
+                // $nbrClasse="SELECT  count(*) as nmbre_classe
+                // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niv_id."' and mention_nom='".$mention_nom."' 
+                // and grad_id='".$grad_id."' 
+                // and rm_id='".$rm_id."' 
+                // and annee_univ='".$anne_univ."' 
+                // group by niv_libelle ";
+                $nbrClasse="select classe_nbre_etud as nmbre_classe from classe_tamby_app where classe_annee_univ='".$anne_univ."'
+                and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau__."' ";
+
                 $rq_nbr = $this->db->query($nbrClasse);
                 $nbr_classe = $rq_nbr->row_array();
                  //Nombre de classe
@@ -89,7 +102,7 @@ class Matiere extends RestController
                 $query = $this->db->query($sql);
                 $res = $query->result();
                 
-                $niveau="";
+               
                 $this->db->select("annee_univ  as label");
                 $this->db->select('annee_univ as value');
                 $queryanne_univ = $this->db->get("annee_univ");
