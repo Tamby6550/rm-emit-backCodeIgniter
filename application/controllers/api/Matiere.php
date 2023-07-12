@@ -46,7 +46,7 @@ class Matiere extends RestController
       
      }
      //Affiche 
-     public function getMatiereRm_get($rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
+     public function getMatiereRm_get($parcours_,$rm_id,$mention_nom,$grad_id,$anne_univ,$niv_id,$etat)
      {
          
          $sql="select distinct prof_id,nom_prof,vheure,credit,prof_contact,matiere,mati_id,etat as etat_mat,dat_deb_etat,date_fin_etat,date_session_n,date_session_r,ue_code,unite_ens,semestre,seme_code ,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention";
@@ -67,9 +67,9 @@ class Matiere extends RestController
                     }
                 }else{
                     if ($etat=='5') {//rehefa tsy manao recherche 
-                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and nom_parcours='".$parcours_."' and rm_id='".$rm_id."'  and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' order by ue_code,matiere ASC ";
                     }else{
-                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
+                        $condition=" Where nom_mention='".$mention_nom."' and grad_id='".$grad_id."' and nom_parcours='".$parcours_."' and rm_id='".$rm_id."'  and anne_univ='".$anne_univ."' and niv_id='".$niv_id."' and etat='".$etat."' order by ue_code,matiere ASC ";
                     }
                 }
 
@@ -91,7 +91,7 @@ class Matiere extends RestController
                 // and annee_univ='".$anne_univ."' 
                 // group by niv_libelle ";
                 $nbrClasse="select classe_nbre_etud as nmbre_classe from classe_tamby_app where classe_annee_univ='".$anne_univ."'
-                and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau__."' ";
+                and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and nom_parcours='".$parcours_."' and classe_niveau='".$niveau__."' ";
 
                 $rq_nbr = $this->db->query($nbrClasse);
                 $nbr_classe = $rq_nbr->row_array();

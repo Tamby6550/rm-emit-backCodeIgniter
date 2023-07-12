@@ -323,13 +323,14 @@ class Classe extends RestController
 
 
                 //Element dans le details
-                $dataClass['classe_id']=$data['classe_grade'].''.$data['classe_mention'].''.$data['classe_annee_univ'].''.$data['classe_niveau'];
+                $dataClass['classe_id']=$data['classe_grade'].''.$data['classe_mention'].''.$data['classe_annee_univ'].''.$data['classe_niveau'].''.$data['nom_parcours'];
 
                 $dataClass['classe_grade']=$data['classe_grade'];
                 $dataClass['classe_mention']=$data['classe_mention'];
                 $dataClass['classe_annee_univ']=$data['classe_annee_univ'];
                 $dataClass['classe_niveau']=$data['classe_niveau'];
                 $dataClass['classe_nbre_etud']=$data['classe_nbre_etud'];
+                $dataClass['nom_parcours']=$data['nom_parcours'];
 
                 try {
                     $this->db->where('classe_id', $dataClass['classe_id']);
@@ -358,14 +359,14 @@ class Classe extends RestController
 		}
      }
 
-     public function getClassetamby_get($classe_grade,$classe_mention,$classe_annee_univ)
+     public function getClassetamby_get($parcours,$classe_grade,$classe_mention,$classe_annee_univ)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
             if ($decodedToken['status'])
             {
-                $sql="select * from classe_tamby_app where classe_annee_univ='".$classe_annee_univ."' and classe_grade='".$classe_grade."' and classe_mention='".$classe_mention."'";
+                $sql="select * from classe_tamby_app where nom_parcours='".$parcours."' and classe_annee_univ='".$classe_annee_univ."' and classe_grade='".$classe_grade."' and classe_mention='".$classe_mention."'";
                 $query3 = $this->db->query($sql);
                 // $niveau = $queryniveau->result();
                 $classe_tamby = $query3->result();

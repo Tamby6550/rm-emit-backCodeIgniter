@@ -162,7 +162,7 @@ $route['api/getMatiere'] = 'api/Matiere/getMatiere';
 //matiere ok
 $route['api/getMatiereProfRm/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereProfRm/$1/$2/$3/$4';
 //matiere ok
-$route['api/getMatiereRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3/$4/$5/$6';
+$route['api/getMatiereRm/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/Matiere/getMatiereRm/$1/$2/$3/$4/$5/$6/$7';
 //ajot details matiere ok
 $route['api/ajouteDetailsMatiere'] = 'api/Matiere/ajouteDetailsMatiere';
 //Modif etat matiere ok
@@ -200,6 +200,6 @@ $route['api/getParcoursDansMention/(:any)/(:any)'] = 'api/TableauAffiche/getParc
 //Ajout Classe Nombre etudiant manuelle
 $route['api/postClassetambyapp'] = 'api/Classe/postClassetambyapp';
 //Get Classe Nombre etudiant manuelle
-$route['api/getClassetamby/(:any)/(:any)/(:any)'] = 'api/Classe/getClassetamby/$1/$2/$3';
+$route['api/getClassetamby/(:any)/(:any)/(:any)/(:any)'] = 'api/Classe/getClassetamby/$1/$2/$3/$4';
 //update Classe
 $route['api/updateClassetamby'] = 'api/Classe/updateClassetamby';
