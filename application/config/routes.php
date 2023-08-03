@@ -194,6 +194,11 @@ $route['api/getTableauAfficheTableauB/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'
 $route['api/getTitreTableau/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTitreTableau/$1/$2/$3/$4/$5/$6';
 $route['api/getTableauAfficheTableauFinale/(:any)/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/getTableauAfficheTableauFinale/$1/$2/$3/$4';
 $route['api/getParcoursDansMention/(:any)/(:any)'] = 'api/TableauAffiche/getParcoursDansMention/$1/$2';
+$route['api/gettableau1/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/gettableau1/$1/$2/$3';
+$route['api/gettableau2/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/gettableau2/$1/$2/$3';
+
+//Tableau_a_default
+$route['api/ajoutTableau1'] = 'api/ParemetreTb1Tb2/ajoutTableau1';
 
 
 //Table classe

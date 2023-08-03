@@ -389,4 +389,80 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
+     public function gettableau1_get($anne_univ,$mention_nom,$nom_parcours)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+
+                $sqlNiveau="SELECT distinct niv_id,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention 
+                where anne_univ=? and nom_mention=? and nom_parcours=? ";
+
+                $sqlDetails="SELECT 
+                    trim(sem.seme_code) as nomsemestre ,
+                    tb1.et_tableau_a as et,
+                    tb1.ed_tableau_a as ed,
+                    tb1.ep_tableau_a as ep
+                    from tambytableau_a_default tb1 inner join semestre sem on sem.seme_id=tb1.seme_id 
+                    where anne_univ=? and tb1.mention_nom=? and tb1.parcours_nom=? AND tb1.niv_id=? ";
+
+                $query1 = $this->db->query($sqlNiveau,[$anne_univ,$mention_nom,$nom_parcours]);
+                $resultat = $query1->result();
+                    
+                for ($i=0; $i < count($resultat); $i++) {
+                    $query2 = $this->db->query($sqlDetails,[$anne_univ,$mention_nom,$nom_parcours,$resultat[$i]->niv_id]);
+                    $resdetails = $query2->result();
+                    $resultat[$i]->details=$resdetails;
+                }
+
+                $this->response($resultat, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
+     public function gettableau2_get($anne_univ,$mention_nom,$nom_parcours)
+     {
+        $headers = $this->input->request_headers(); 
+		if (isset($headers['Authorization'])) {
+			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
+            if ($decodedToken['status'])
+            {
+
+                $sqlNiveau="SELECT distinct niv_id,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention 
+                where anne_univ=? and nom_mention=? and nom_parcours=? ";
+
+                $sqlDetails="SELECT 
+                    tb2.travaux as travail,
+                    tb2.et_tableau_b as et,
+                    tb2.ed_tableau_b as ed,
+                    tb2.ep_tableau_b as ep
+                    from tambytableau_b_default tb2 
+                    where anne_univ=? and tb2.mention_nom=? and tb2.parcours_nom=? AND tb2.niv_id=?";
+
+                $query1 = $this->db->query($sqlNiveau,[$anne_univ,$mention_nom,$nom_parcours]);
+                $resultat = $query1->result();
+                    
+                for ($i=0; $i < count($resultat); $i++) {
+                    $query2 = $this->db->query($sqlDetails,[$anne_univ,$mention_nom,$nom_parcours,$resultat[$i]->niv_id]);
+                    $resdetails = $query2->result();
+                    $resultat[$i]->details=$resdetails;
+                }
+
+                $this->response($resultat, RestController::HTTP_OK);
+            }
+            else {
+                $this->response($decodedToken);
+            }
+		}
+		else {
+			$this->response(['Authentication failed'], RestController::HTTP_OK);
+		}
+     }
 }
