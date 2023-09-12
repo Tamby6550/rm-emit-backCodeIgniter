@@ -74,13 +74,12 @@ class Matiere extends RestController
                 }
 
                 $niveau__='';
-                if ($niv_id=='1' || $niv_id=='2' || $niv_id=='3') {
-                    $niveau__='L'.$niv_id;
-                }else if ($niv_id=='4') {
+                if ($niv_id=='7' || $niv_id=='8' || $niv_id=='9') {
+                    $niveau__='L'.($niv_id-6);
+                }else if ($niv_id=='10') {
                     $niveau__='M1';
-                }else{
+                }else if ($niv_id=='11'){
                     $niveau__='M2';
-        
                 }
 
                 //Nombre de classe
@@ -90,8 +89,8 @@ class Matiere extends RestController
                 // and rm_id='".$rm_id."' 
                 // and annee_univ='".$anne_univ."' 
                 // group by niv_libelle ";
-                $nbrClasse="select classe_nbre_etud as nmbre_classe from classe_tamby_app where classe_annee_univ='".$anne_univ."'
-                and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and nom_parcours='".$parcours_."' and classe_niveau='".$niveau__."' ";
+                $nbrClasse="select classe_nbre_etud as nmbre_classe from classe_tamby_app where  classe_niveau='".$niveau__."' and classe_annee_univ='".$anne_univ."'
+                and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and nom_parcours='".$parcours_."'  ";
 
                 $rq_nbr = $this->db->query($nbrClasse);
                 $nbr_classe = $rq_nbr->row_array();
@@ -139,7 +138,8 @@ class Matiere extends RestController
                         'sql' =>$sql,
                         'grade' => $grade,
                         'mention'=> $mention,
-                        'nbre_classe'=> $nbr_classe
+                        'nbre_classe'=> $nbr_classe,
+                        'test'=> $nbrClasse,
                     ];
                
                 $this->response($reponse, RestController::HTTP_OK);

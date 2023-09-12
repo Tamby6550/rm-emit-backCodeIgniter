@@ -209,7 +209,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."'  and info.nom_parcours='".$parcours."'  and info.rm_id='".$rm_id."'
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and info.prof_id='".$prof_id."' and info.grad_id='".$grad_id."'  and info.nom_parcours='".$parcours."'  and info.rm_id='".$rm_id."'
                     group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
@@ -292,7 +292,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' and info.nom_parcours='".$parcours."' and info.rm_id='".$rm_id."'
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and info.prof_id='".$prof_id."' and info.grad_id='".$grad_id."' and info.nom_parcours='".$parcours."' and info.rm_id='".$rm_id."'
                     group by info.parc_libelle,prof.prof_type,prof.prof_titre,prof.prof_grade";
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
@@ -306,6 +306,7 @@ class TableauAffiche extends RestController
                     $reponse = [
                         'total' => $total,
                         'detail' =>$res,
+                        's' =>'ok',
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);
