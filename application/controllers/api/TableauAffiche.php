@@ -150,7 +150,7 @@ class TableauAffiche extends RestController
                 // $sql="SELECT count(*) 
                 // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$niveau_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
                 // group by niv_libelle ";
-                $sql="select classe_nbre_etud as count from classe_tamby_app where classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."' ";
+                $sql="select classe_nbre_etud as count from classe_tamby_app where nom_parcours='".$parcours."' and  classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."' ";
                 $query = $this->db->query($sql);
                 $res = $query->row_array();
 
@@ -168,6 +168,7 @@ class TableauAffiche extends RestController
                     'nbreClasse' => $res,
                     'group_tamby' =>$group_tamby,
                     'info' =>$info,
+                    'infko' =>$sql,
                 ];
 
               
@@ -217,7 +218,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."' and anne.prof_id='".$prof_id."' and info.nom_parcours='".$parcours."' and info.grad_id='".$grad_id."' ";
+                    AND anne.id_details=det.id_details AND info.nom_mention='".$mention_nom."' and info.prof_id='".$prof_id."' and info.nom_parcours='".$parcours."' and info.grad_id='".$grad_id."' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
@@ -238,7 +239,7 @@ class TableauAffiche extends RestController
                         // $sql="SELECT count(*) 
                         // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
                         // group by niv_libelle ";
-                        $sql="select classe_nbre_etud as count from classe_tamby_app where classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."'";
+                        $sql="select classe_nbre_etud as count from classe_tamby_app where nom_parcours='".$parcours."' and classe_annee_univ='".$anne_univ."' and classe_grade='".$grad_id."' and classe_mention='".$mention_nom."' and classe_niveau='".$niveau."'";
                         $query = $this->db->query($sql);
                         $nbre_classe = $query->row_array();
                         $res[$i]->nbgroup=$nbre_classe;
@@ -397,7 +398,7 @@ class TableauAffiche extends RestController
             if ($decodedToken['status'])
             {
 
-                $sqlNiveau="SELECT distinct niv_id,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention 
+                $sqlNiveau="SELECT distinct niv_id,abbr_niveau as nomclasse from mat_niv_parcours_prof_ue_semestre_associer_respmention 
                 where anne_univ=? and nom_mention=? and nom_parcours=? ";
 
                 $sqlDetails="SELECT 
@@ -435,7 +436,7 @@ class TableauAffiche extends RestController
             if ($decodedToken['status'])
             {
 
-                $sqlNiveau="SELECT distinct niv_id,abbr_niveau from mat_niv_parcours_prof_ue_semestre_associer_respmention 
+                $sqlNiveau="SELECT distinct niv_id,abbr_niveau as nomclasse from mat_niv_parcours_prof_ue_semestre_associer_respmention 
                 where anne_univ=? and nom_mention=? and nom_parcours=? ";
 
                 $sqlDetails="SELECT 

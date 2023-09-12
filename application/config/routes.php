@@ -199,6 +199,9 @@ $route['api/gettableau2/(:any)/(:any)/(:any)'] = 'api/TableauAffiche/gettableau2
 
 //Tableau_a_default
 $route['api/ajoutTableau1'] = 'api/ParemetreTb1Tb2/ajoutTableau1';
+//Tableau_b_default
+$route['api/ajoutTableau2'] = 'api/ParemetreTb1Tb2/ajoutTableau2';
+
 
 
 //Table classe
