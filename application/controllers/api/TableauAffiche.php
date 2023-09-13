@@ -317,7 +317,7 @@ class TableauAffiche extends RestController
                     $total = $query4->row_array();
 
                     $sql3="select * from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' ";
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
@@ -326,6 +326,7 @@ class TableauAffiche extends RestController
                         'total' => $total,
                         'detail' =>$res,
                         's' =>$sql3,
+                        'sa' =>$sql4,
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);
