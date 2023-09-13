@@ -339,7 +339,7 @@ class TableauAffiche extends RestController
 			$this->response(['Authentication failed'], RestController::HTTP_OK);
 		}
      }
-     public function getTableauAfficheTableauFinale_get($rm_id,$anne_univ,$mention_nom,$grad_id)
+     public function getTableauAfficheTableauFinale_get($rm_id,$anne_univ,$mention_nom,$grad_id,$parcours)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -372,7 +372,7 @@ class TableauAffiche extends RestController
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
                     where info.prof_id=prof.prof_id and anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."'
-                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."'  and info.grad_id='".$grad_id."' and  info.rm_id='".$rm_id."'
+                    AND anne.id_details=det.id_details AND nom_mention='".$mention_nom."'  and info.grad_id='".$grad_id."' and info.nom_parcours='".$parcours."'   and  info.rm_id='".$rm_id."'
                     group by info.nom_prof,info.prof_id,info.prof_grade,info.attribution ";
                     $query4 = $this->db->query($sql4);
                     $res = $query4->result();
