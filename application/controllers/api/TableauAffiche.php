@@ -24,7 +24,7 @@ class TableauAffiche extends RestController
      //Affiche tous les infos tableau
      public function getTableauAffiche_get($parcours,$anne_univ,$mention_nom,$niveau_id,$rm_id)
      {
-        $sql="select info.mati_id,info.mat_libelle,info.semestre,info.nom_prof , det.* from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
+        $sql="select info.mati_id,info.matiere as  mat_libelle,info.semestre,info.nom_prof , det.* from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
         anne_univ_tamby_rm anne,detailstamby det 
         where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."'  and anne.id_details=det.id_details and  niv_id='".$niveau_id."' and nom_mention='".$mention_nom."'";
 
@@ -39,7 +39,7 @@ class TableauAffiche extends RestController
                 $res = $query1->result();
 
                 for ($i=0; $i < count($res); $i++) { 
-                    $sql3="SELECT  info.mati_id,info.mat_libelle,info.semestre,info.nom_prof ,info.vheure,info.credit, det.* 
+                    $sql3="SELECT  info.mati_id,info.matiere as mat_libelle,info.semestre,info.nom_prof ,info.vheure,info.credit, det.* 
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' AND info.seme_id='".$res[$i]->seme_id."'
@@ -133,14 +133,23 @@ class TableauAffiche extends RestController
      public function getTitreTableau_get($parcours,$rm_id,$mention_nom,$niveau_id,$grad_id,$anne_univ)
      {
         $niveau='';
-        if ($niveau_id=='1' || $niveau_id=='2' || $niveau_id=='3') {
-            $niveau='L'.$niveau_id;
-        }else if ($niveau_id=='4') {
+        if ($niveau_id=='7' || $niveau_id=='8' || $niveau_id=='9') {
+            $niveau='L'.($niveau_id-6);
+        }else if ($niveau_id=='10' || $niveau_id=='4') {
             $niveau='M1';
-        }else{
+        }else if ($niveau_id=='11' || $niveau_id=='5') {
             $niveau='M2';
-
         }
+        else if ($niveau_id=='1') {
+            $niveau='L1';
+        }
+        else if ($niveau_id=='2') {
+            $niveau='L2';
+        }
+        else if ($niveau_id=='3') {
+            $niveau='L3';
+        }
+
        
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
@@ -214,7 +223,7 @@ class TableauAffiche extends RestController
                     $query4 = $this->db->query($sql4);
                     $total = $query4->row_array();
 
-                    $sql3="SELECT distinct info.niv_id,info.abbr_niveau,info.mati_id,info.mat_libelle,info.nom_prof ,info.vheure, det.* 
+                    $sql3="SELECT distinct info.niv_id,info.abbr_niveau,info.mati_id,info.matiere as  mat_libelle,info.nom_prof ,info.vheure, det.* 
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det 
                     where anne.mati_id=info.mati_id and anne.anne_lib='".$anne_univ."' 
@@ -227,14 +236,24 @@ class TableauAffiche extends RestController
                     $group_tamby = $query5->row_array();
 
                     
+                    
                     for ($i=0; $i < count($res); $i++) { 
                         $niveau='';
-                        if ($res[$i]->niv_id=='1' || $res[$i]->niv_id=='2' || $res[$i]->niv_id=='3') {
-                            $niveau='L'.$res[$i]->niv_id;
-                        }else if ($res[$i]->niv_id=='4') {
+                        if ($res[$i]->niv_id=='7' || $res[$i]->niv_id=='8' || $res[$i]->niv_id=='9') {
+                            $niveau='L'.($res[$i]->niv_id-6);
+                        }else if ($res[$i]->niv_id=='10' || $res[$i]->niv_id=='4') {
                             $niveau='M1';
-                        }else{
+                        }else if ($res[$i]->niv_id=='11' || $res[$i]->niv_id=='5') {
                             $niveau='M2';
+                        }
+                        else if ($res[$i]->niv_id=='1') {
+                            $niveau='L1';
+                        }
+                        else if ($res[$i]->niv_id=='2') {
+                            $niveau='L2';
+                        }
+                        else if ($res[$i]->niv_id=='3') {
+                            $niveau='L3';
                         }
                         // $sql="SELECT count(*) 
                         // FROM  public.affiche_etu_niv_parc_grad_rm where   niv_id='".$res[$i]->niv_id."' and mention_nom='".$mention_nom."' and grad_id='".$grad_id."' and rm_id='".$rm_id."' and annee_univ='".$anne_univ."'
@@ -306,7 +325,7 @@ class TableauAffiche extends RestController
                     $reponse = [
                         'total' => $total,
                         'detail' =>$res,
-                        's' =>'ok',
+                        's' =>$sql3,
                     ];
                 
                 $this->response($reponse, RestController::HTTP_OK);

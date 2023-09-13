@@ -73,13 +73,23 @@ class Matiere extends RestController
                     }
                 }
 
+                
                 $niveau__='';
                 if ($niv_id=='7' || $niv_id=='8' || $niv_id=='9') {
                     $niveau__='L'.($niv_id-6);
-                }else if ($niv_id=='10') {
+                }else if ($niv_id=='10' || $niv_id=='4') {
                     $niveau__='M1';
-                }else if ($niv_id=='11'){
+                }else if ($niv_id=='11' || $niv_id=='5'){
                     $niveau__='M2';
+                }
+                else if ($niv_id=='1') {
+                    $niveau__='L1';
+                }
+                else if ($niv_id=='2') {
+                    $niveau__='L2';
+                }
+                else if ($niv_id=='3') {
+                    $niveau__='L3';
                 }
 
                 //Nombre de classe
