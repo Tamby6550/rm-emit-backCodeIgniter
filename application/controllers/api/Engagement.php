@@ -35,7 +35,7 @@ class Engagement extends RestController
                $datafaire=array();
                
                //Element dans le details
-               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'];
+               $dataEngagement['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'].''.$data['parcours_'];
                $dataEngagement['nom_enga']=$data['nom_enga'];
                $dataEngagement['nbre_etu']=$data['nbre_etu'];
                $dataEngagement['valeur']=$data['valeur'];
@@ -43,10 +43,11 @@ class Engagement extends RestController
                $dataEngagement['date_engamnt2']=$data['date_engamnt2'];
                $dataEngagement['grad_id']=$data['grad_id'];
                $dataEngagement['mention']=$data['mention'];
+               $dataEngagement['nom_parcours']=$data['parcours_'];
 
                $datafaire['prof_id']=$data['prof_id'];
                $datafaire['annee_univ']=$data['annee_univ'];
-               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'];
+               $datafaire['id_enga']=$data['prof_id'].''.$data['grad_id'].''.$data['nom_enga'].''.$data['mention'].''.$data['annee_univ'].''.$data['parcours_'];
 
                try {
                    $this->db->where('id_enga', $datafaire['id_enga']);
@@ -97,17 +98,17 @@ class Engagement extends RestController
        }
     }
 
-    public function getEngagement_get($prof_id,$grad_id,$mention)
+    public function getEngagement_get($prof_id,$grad_id,$mention,$parcours)
      {
         $headers = $this->input->request_headers(); 
 		if (isset($headers['Authorization'])) {
 			$decodedToken = $this->authorization_token->validateToken($headers['Authorization']);
             if ($decodedToken['status'])
             {
-                $sql="select eng.nom_enga,eng.nbre_etu,eng.valeur,eng.date_engamnt1,eng.date_engamnt2 ,faire.annee_univ
+                $sql="SELECT eng.nom_enga,eng.nbre_etu,eng.valeur,eng.date_engamnt1,eng.date_engamnt2 ,faire.annee_univ
                 from engagement_tamby eng, faire_engag_tamby faire 
                 where faire.id_enga=eng.id_enga 
-                and faire.prof_id='".$prof_id."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention."' ";
+                and faire.prof_id='".$prof_id."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention."' and eng.nom_parcours='".$parcours."' ";
                 $query3 = $this->db->query($sql);
                 $res = $query3->result();
 
