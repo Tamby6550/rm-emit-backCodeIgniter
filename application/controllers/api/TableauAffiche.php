@@ -298,14 +298,14 @@ class TableauAffiche extends RestController
                     SUM(CAST(det.total_ep AS DECIMAL)) AS ttotal_ep,
                     
                     (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
-                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."') as total_enga,
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.nom_parcours='".$parcours."') as total_enga,
                                 
                     (SUM(CAST(det.total_ed AS DECIMAL))+(select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
-                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')) as total_ed_enga,
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.nom_parcours='".$parcours."')) as total_ed_enga,
                     
                     (SUM(CAST(det.total_et AS DECIMAL))+SUM(CAST(det.total_ed AS DECIMAL))+SUM(CAST(det.total_ep AS DECIMAL))+
                     (select SUM(CAST(eng.valeur AS DECIMAL)) from engagement_tamby eng,faire_engag_tamby faire 
-                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."')
+                     where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."' and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.nom_parcours='".$parcours."')
                      ) as heureDeclare
                      
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
@@ -317,7 +317,7 @@ class TableauAffiche extends RestController
                     $total = $query4->row_array();
 
                     $sql3="select * from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id='".$prof_id."'
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' ";
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_parcours='".$parcours."' ";
                     $query3 = $this->db->query($sql3);
                     $res= $query3->result();
 
@@ -359,15 +359,15 @@ class TableauAffiche extends RestController
                              
                     (select SUM(CAST(eng.valeur AS DECIMAL)) 
                     from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Encadrement%') as encadrement,
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Encadrement%' and eng.nom_parcours='".$parcours."') as encadrement,
                                 
                     (select SUM(CAST(eng.valeur AS DECIMAL))  
                     from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Soutenance%') as soutenance,
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Soutenance%' and eng.nom_parcours='".$parcours."') as soutenance,
                     
                     (select SUM(CAST(eng.valeur AS DECIMAL)) 
                     from engagement_tamby eng,faire_engag_tamby faire where faire.id_enga=eng.id_enga and faire.prof_id=info.prof_id
-                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Voyages%') as voyages
+                    and faire.annee_univ='".$anne_univ."' and eng.grad_id='".$grad_id."' and eng.mention='".$mention_nom."' and eng.nom_enga like '%Voyages%' and eng.nom_parcours='".$parcours."') as voyages
                     
                     from mat_niv_parcours_prof_ue_semestre_associer_respmention info,
                     anne_univ_tamby_rm anne,detailstamby det ,professeur prof
